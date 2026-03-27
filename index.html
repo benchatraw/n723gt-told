@@ -132,11 +132,83 @@
 
   .field input::placeholder { color: var(--text-dim); opacity: 0.5; }
 
+  .airport-section { margin-bottom: 20px; }
+
   .airport-row {
-    display: flex; gap: 12px; align-items: flex-end; margin-bottom: 20px;
+    display: flex; gap: 12px; align-items: flex-end; margin-bottom: 8px;
   }
 
   .airport-row .field { flex: 1; }
+
+  /* Airport Search */
+  .airport-search-wrap {
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .airport-search-wrap input {
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+
+  .airport-search-wrap input:focus { border-color: var(--accent); }
+  .airport-search-wrap input::placeholder { color: var(--text-dim); opacity: 0.5; }
+
+  .airport-search-label {
+    font-size: 12px; font-weight: 500; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .airport-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: var(--card);
+    border: 1px solid var(--accent);
+    border-radius: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+
+  .airport-dropdown.open { display: block; }
+
+  .airport-dropdown-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  .airport-dropdown-item:hover, .airport-dropdown-item.active {
+    background: var(--blue);
+  }
+
+  .airport-dropdown-item:last-child { border-bottom: none; }
+
+  .airport-dropdown-item .ap-id {
+    font-weight: 700; color: var(--accent-light); font-size: 14px;
+  }
+
+  .airport-dropdown-item .ap-name {
+    font-size: 13px; color: var(--text);
+  }
+
+  .airport-dropdown-item .ap-city {
+    font-size: 12px; color: var(--text-dim);
+  }
 
   .btn {
     padding: 10px 20px;
@@ -199,6 +271,31 @@
   .checkbox-row input[type="checkbox"] {
     width: 18px; height: 18px; accent-color: var(--accent);
   }
+
+  /* METAR time display */
+  .metar-time {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--text-dim);
+    margin-top: 6px;
+    cursor: pointer;
+  }
+
+  .metar-time .time-value {
+    font-weight: 600; color: var(--accent-light);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .metar-time .time-toggle {
+    font-size: 11px;
+    background: var(--card-light);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+
+  .metar-time .time-toggle:hover { background: var(--blue); }
 
   /* Results */
   .results { display: none; }
@@ -492,40 +589,6 @@
     font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;
   }
 
-  .toggle-switch {
-    position: relative;
-    width: 44px; height: 24px;
-    display: inline-block;
-  }
-
-  .toggle-switch input { opacity: 0; width: 0; height: 0; }
-
-  .toggle-slider {
-    position: absolute; inset: 0;
-    background: var(--border);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-
-  .toggle-slider::before {
-    content: '';
-    position: absolute;
-    width: 18px; height: 18px;
-    left: 3px; bottom: 3px;
-    background: white;
-    border-radius: 50%;
-    transition: transform 0.2s;
-  }
-
-  .toggle-switch input:checked + .toggle-slider {
-    background: var(--red);
-  }
-
-  .toggle-switch input:checked + .toggle-slider::before {
-    transform: translateX(20px);
-  }
-
   .fr-override-select {
     background: var(--navy);
     border: 1px solid var(--border);
@@ -536,7 +599,7 @@
     font-family: inherit;
   }
 
-  /* Runway input row: flex on desktop, grid on mobile */
+  /* Runway input row */
   .runway-input-row {
     display: flex;
     gap: 12px;
@@ -545,34 +608,69 @@
   }
   .runway-input-row .field { flex: 1; }
 
-  .ifr-proc-row {
-    display: flex; gap: 12px; align-items: center;
-    margin-top: 4px;
-    padding: 6px 12px;
+  /* IFR Procedure Toggles - new design */
+  .ifr-proc-section {
+    margin-top: 6px;
+    padding: 10px 12px;
     background: rgba(255,255,255,0.03);
     border-radius: 8px;
-    font-size: 13px;
+    border: 1px solid var(--border);
   }
 
-  .ifr-proc-row label {
-    text-transform: none !important;
-    font-size: 13px !important;
-    color: var(--text) !important;
-  }
-
-  .ifr-proc-row input[type="checkbox"] {
-    width: 16px; height: 16px;
-    accent-color: var(--accent);
-  }
-
-  .badge-ifr-only {
-    background: rgba(239,68,68,0.15);
-    color: var(--red);
+  .ifr-proc-section .ifr-proc-label {
     font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
   }
+
+  .ifr-rwy-direction {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .ifr-rwy-direction:last-child { margin-bottom: 0; }
+
+  .ifr-rwy-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    min-width: 52px;
+  }
+
+  .ifr-toggle-group {
+    display: flex; gap: 6px;
+  }
+
+  .ifr-pill {
+    display: flex; align-items: center; gap: 4px;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--navy);
+    color: var(--text-dim);
+    transition: all 0.2s;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .ifr-pill input[type="checkbox"] {
+    display: none;
+  }
+
+  .ifr-pill.active {
+    background: rgba(34,197,94,0.15);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .ifr-pill .pill-icon { font-size: 11px; }
 
   .badge-no-proc {
     background: rgba(239,68,68,0.1);
@@ -608,7 +706,6 @@
 
   @media (max-width: 640px) {
     .container { padding: 10px; }
-    .input-panel { padding: 16px; }
     .input-panel { padding: 14px; }
     .input-grid .field label {
       font-size: 10px;
@@ -632,19 +729,11 @@
       justify-self: start;
     }
 
-    /* IFR procedure checkboxes: wrap into grid */
-    .ifr-proc-row {
-      display: grid;
-      grid-template-columns: auto auto;
-      gap: 4px 10px;
-      padding: 8px 10px;
-      font-size: 12px;
+    /* IFR procedure toggles */
+    .ifr-rwy-direction {
+      flex-wrap: wrap;
+      gap: 6px;
     }
-    .ifr-proc-row > span:first-child {
-      grid-column: 1 / -1;
-    }
-    /* Hide the divider pipe on mobile */
-    .ifr-proc-row > span[style*="border"] { display: none; }
 
     /* Flight rules bar: stack vertically */
     .flight-rules-bar {
@@ -699,13 +788,27 @@
   <div class="input-panel">
     <h2>&#9881; Flight Parameters</h2>
 
-    <div class="airport-row">
-      <div class="field" style="max-width:180px;">
-        <label>Airport ID</label>
-        <input type="text" id="airportId" placeholder="KHEG" maxlength="4" style="text-transform:uppercase;">
+    <div class="airport-section">
+      <div class="airport-row">
+        <div class="field" style="max-width:180px;">
+          <label>Airport ID (ICAO)</label>
+          <input type="text" id="airportId" placeholder="e.g. KHEG" maxlength="4" style="text-transform:uppercase;">
+        </div>
+        <button class="btn btn-primary" id="fetchMetarBtn" onclick="fetchMetar()">Fetch METAR</button>
       </div>
-      <button class="btn btn-primary" id="fetchMetarBtn" onclick="fetchMetar()">Fetch METAR</button>
-      <div style="font-size:12px; color:var(--text-dim); align-self:center;">or enter weather manually below</div>
+
+      <!-- Airport Search -->
+      <div class="airport-search-wrap">
+        <span class="airport-search-label">Search by airport name or city</span>
+        <input type="text" id="airportSearch" placeholder="e.g. Gainesville, Herlong, Orlando Executive..." autocomplete="off">
+        <div class="airport-dropdown" id="airportDropdown"></div>
+      </div>
+
+      <!-- METAR timestamp display -->
+      <div id="metarTimeDisplay" style="display:none;" class="metar-time" onclick="toggleMetarTimeZone()">
+        <span id="metarTimeValue" class="time-value"></span>
+        <span id="metarTimeToggle" class="time-toggle">Zulu</span>
+      </div>
     </div>
 
     <div class="subsection-title">Weather</div>
@@ -750,7 +853,7 @@
     <div class="flight-rules-bar" id="flightRulesBar">
       <div class="fr-indicator">
         <span class="fr-badge vfr" id="frBadge">VFR</span>
-        <span class="fr-detail" id="frDetail">Auto-detected from weather</span>
+        <span class="fr-detail" id="frDetail">Enter ceiling/visibility for auto-detect</span>
       </div>
       <div class="fr-override">
         <label>Override:</label>
@@ -774,38 +877,7 @@
       </div>
     </div>
     <div id="runwayInputs">
-      <div class="runway-input-group" style="margin-bottom:12px;">
-        <div class="runway-input-row" >
-          <div class="field">
-            <label>Runway</label>
-            <input type="text" class="rwyName" placeholder="7/25" maxlength="10">
-          </div>
-          <div class="field">
-            <label>Length (ft)</label>
-            <input type="number" class="rwyLength" placeholder="4000">
-          </div>
-          <div class="field">
-            <label>Heading (Rwy 1)</label>
-            <input type="number" class="rwyHdg" placeholder="70" min="0" max="360">
-          </div>
-          <div class="field">
-            <label>Surface</label>
-            <select class="rwySurface">
-              <option value="dry_paved">Dry Paved</option>
-              <option value="dry_grass">Dry Grass</option>
-              <option value="wet_grass">Wet Grass</option>
-            </select>
-          </div>
-        </div>
-        <div class="ifr-proc-row">
-          <span style="color:var(--text-dim); font-size:12px; min-width:90px;">IFR Procedures:</span>
-          <input type="checkbox" class="hasIfrDep1" id="ifrDep1_0"><label for="ifrDep1_0">Rwy 1 Departure</label>
-          <input type="checkbox" class="hasIfrApp1" id="ifrApp1_0"><label for="ifrApp1_0">Rwy 1 Approach</label>
-          <span style="color:var(--border); margin:0 4px;">|</span>
-          <input type="checkbox" class="hasIfrDep2" id="ifrDep2_0"><label for="ifrDep2_0">Rwy 2 Departure</label>
-          <input type="checkbox" class="hasIfrApp2" id="ifrApp2_0"><label for="ifrApp2_0">Rwy 2 Approach</label>
-        </div>
-      </div>
+      <!-- Runways will be populated dynamically -->
     </div>
     <button class="btn btn-secondary" onclick="addRunway()" style="margin-top:4px; font-size:13px;">+ Add Runway</button>
 
@@ -863,8 +935,227 @@
 </div>
 
 <script>
+// ===== US AIRPORT DATABASE =====
+// Comprehensive list of US public-use airports
+const US_AIRPORTS = [
+  {id:'KATL',name:'Hartsfield-Jackson Atlanta Intl',city:'Atlanta',state:'GA'},
+  {id:'KLAX',name:'Los Angeles Intl',city:'Los Angeles',state:'CA'},
+  {id:'KORD',name:'O\'Hare Intl',city:'Chicago',state:'IL'},
+  {id:'KDFW',name:'Dallas/Fort Worth Intl',city:'Dallas-Fort Worth',state:'TX'},
+  {id:'KDEN',name:'Denver Intl',city:'Denver',state:'CO'},
+  {id:'KJFK',name:'John F. Kennedy Intl',city:'New York',state:'NY'},
+  {id:'KSFO',name:'San Francisco Intl',city:'San Francisco',state:'CA'},
+  {id:'KSEA',name:'Seattle-Tacoma Intl',city:'Seattle',state:'WA'},
+  {id:'KLAS',name:'Harry Reid Intl',city:'Las Vegas',state:'NV'},
+  {id:'KMCO',name:'Orlando Intl',city:'Orlando',state:'FL'},
+  {id:'KBOS',name:'Boston Logan Intl',city:'Boston',state:'MA'},
+  {id:'KMSP',name:'Minneapolis-Saint Paul Intl',city:'Minneapolis',state:'MN'},
+  {id:'KDTW',name:'Detroit Metro Wayne County',city:'Detroit',state:'MI'},
+  {id:'KPHL',name:'Philadelphia Intl',city:'Philadelphia',state:'PA'},
+  {id:'KCLT',name:'Charlotte Douglas Intl',city:'Charlotte',state:'NC'},
+  {id:'KMIA',name:'Miami Intl',city:'Miami',state:'FL'},
+  {id:'KPHX',name:'Phoenix Sky Harbor Intl',city:'Phoenix',state:'AZ'},
+  {id:'KEWR',name:'Newark Liberty Intl',city:'Newark',state:'NJ'},
+  {id:'KIAH',name:'George Bush Intercontinental',city:'Houston',state:'TX'},
+  {id:'KLGA',name:'LaGuardia',city:'New York',state:'NY'},
+  {id:'KFLL',name:'Fort Lauderdale-Hollywood Intl',city:'Fort Lauderdale',state:'FL'},
+  {id:'KBWI',name:'Baltimore/Washington Intl',city:'Baltimore',state:'MD'},
+  {id:'KIAD',name:'Washington Dulles Intl',city:'Washington',state:'DC'},
+  {id:'KDCA',name:'Ronald Reagan Washington National',city:'Washington',state:'DC'},
+  {id:'KMDW',name:'Chicago Midway Intl',city:'Chicago',state:'IL'},
+  {id:'KSLC',name:'Salt Lake City Intl',city:'Salt Lake City',state:'UT'},
+  {id:'KSAN',name:'San Diego Intl Lindbergh Field',city:'San Diego',state:'CA'},
+  {id:'KTPA',name:'Tampa Intl',city:'Tampa',state:'FL'},
+  {id:'KPDX',name:'Portland Intl',city:'Portland',state:'OR'},
+  {id:'KSTL',name:'St. Louis Lambert Intl',city:'St. Louis',state:'MO'},
+  {id:'KBNA',name:'Nashville Intl',city:'Nashville',state:'TN'},
+  {id:'KAUS',name:'Austin-Bergstrom Intl',city:'Austin',state:'TX'},
+  {id:'KSAT',name:'San Antonio Intl',city:'San Antonio',state:'TX'},
+  {id:'KSNA',name:'John Wayne-Orange County',city:'Santa Ana',state:'CA'},
+  {id:'KRDU',name:'Raleigh-Durham Intl',city:'Raleigh-Durham',state:'NC'},
+  {id:'KMKE',name:'General Mitchell Intl',city:'Milwaukee',state:'WI'},
+  {id:'KCLE',name:'Cleveland Hopkins Intl',city:'Cleveland',state:'OH'},
+  {id:'KIND',name:'Indianapolis Intl',city:'Indianapolis',state:'IN'},
+  {id:'KCMH',name:'John Glenn Columbus Intl',city:'Columbus',state:'OH'},
+  {id:'KSMF',name:'Sacramento Intl',city:'Sacramento',state:'CA'},
+  {id:'KSJC',name:'San Jose Intl',city:'San Jose',state:'CA'},
+  {id:'KPIT',name:'Pittsburgh Intl',city:'Pittsburgh',state:'PA'},
+  {id:'KOAK',name:'Oakland Intl',city:'Oakland',state:'CA'},
+  {id:'KRSW',name:'Southwest Florida Intl',city:'Fort Myers',state:'FL'},
+  {id:'KCVG',name:'Cincinnati/Northern Kentucky Intl',city:'Cincinnati',state:'OH'},
+  {id:'KABQ',name:'Albuquerque Intl Sunport',city:'Albuquerque',state:'NM'},
+  {id:'KBUF',name:'Buffalo Niagara Intl',city:'Buffalo',state:'NY'},
+  {id:'KELP',name:'El Paso Intl',city:'El Paso',state:'TX'},
+  {id:'KMEM',name:'Memphis Intl',city:'Memphis',state:'TN'},
+  {id:'KRIC',name:'Richmond Intl',city:'Richmond',state:'VA'},
+  {id:'KOMA',name:'Eppley Airfield',city:'Omaha',state:'NE'},
+  {id:'KTUL',name:'Tulsa Intl',city:'Tulsa',state:'OK'},
+  {id:'KOKC',name:'Will Rogers World',city:'Oklahoma City',state:'OK'},
+  {id:'KBHM',name:'Birmingham-Shuttlesworth Intl',city:'Birmingham',state:'AL'},
+  {id:'KPBI',name:'Palm Beach Intl',city:'West Palm Beach',state:'FL'},
+  {id:'KGSO',name:'Piedmont Triad Intl',city:'Greensboro',state:'NC'},
+  {id:'KSYR',name:'Syracuse Hancock Intl',city:'Syracuse',state:'NY'},
+  {id:'KPWM',name:'Portland Intl Jetport',city:'Portland',state:'ME'},
+  {id:'KBTV',name:'Burlington Intl',city:'Burlington',state:'VT'},
+  {id:'KHSV',name:'Huntsville Intl',city:'Huntsville',state:'AL'},
+  // Florida airports
+  {id:'KHEG',name:'Herlong Recreational',city:'Jacksonville',state:'FL'},
+  {id:'KJAX',name:'Jacksonville Intl',city:'Jacksonville',state:'FL'},
+  {id:'KCRG',name:'Jacksonville Executive at Craig',city:'Jacksonville',state:'FL'},
+  {id:'KVQQ',name:'Cecil',city:'Jacksonville',state:'FL'},
+  {id:'KGNV',name:'Gainesville Regional',city:'Gainesville',state:'FL'},
+  {id:'KORL',name:'Orlando Executive',city:'Orlando',state:'FL'},
+  {id:'KSFB',name:'Orlando Sanford Intl',city:'Sanford',state:'FL'},
+  {id:'KDAB',name:'Daytona Beach Intl',city:'Daytona Beach',state:'FL'},
+  {id:'KSGJ',name:'Northeast Florida Regional',city:'St. Augustine',state:'FL'},
+  {id:'KPNS',name:'Pensacola Intl',city:'Pensacola',state:'FL'},
+  {id:'KTLH',name:'Tallahassee Intl',city:'Tallahassee',state:'FL'},
+  {id:'KSRQ',name:'Sarasota-Bradenton Intl',city:'Sarasota',state:'FL'},
+  {id:'KAPF',name:'Naples Municipal',city:'Naples',state:'FL'},
+  {id:'KFPR',name:'St. Lucie County Intl',city:'Fort Pierce',state:'FL'},
+  {id:'KVPS',name:'Destin-Fort Walton Beach',city:'Fort Walton Beach',state:'FL'},
+  {id:'KECP',name:'Northwest Florida Beaches Intl',city:'Panama City',state:'FL'},
+  {id:'KPIE',name:'St. Pete-Clearwater Intl',city:'St. Petersburg',state:'FL'},
+  {id:'KLAL',name:'Lakeland Linder Intl',city:'Lakeland',state:'FL'},
+  {id:'KOCF',name:'Ocala Intl - Jim Taylor Field',city:'Ocala',state:'FL'},
+  {id:'KLEE',name:'Leesburg Intl',city:'Leesburg',state:'FL'},
+  {id:'KISM',name:'Kissimmee Gateway',city:'Kissimmee',state:'FL'},
+  {id:'KOBE',name:'Okeechobee County',city:'Okeechobee',state:'FL'},
+  {id:'KVRB',name:'Vero Beach Regional',city:'Vero Beach',state:'FL'},
+  {id:'KMLB',name:'Melbourne Orlando Intl',city:'Melbourne',state:'FL'},
+  {id:'KSUA',name:'Witham Field',city:'Stuart',state:'FL'},
+  {id:'KFMY',name:'Page Field',city:'Fort Myers',state:'FL'},
+  {id:'KBCT',name:'Boca Raton',city:'Boca Raton',state:'FL'},
+  {id:'KPMP',name:'Pompano Beach Airpark',city:'Pompano Beach',state:'FL'},
+  {id:'KHWO',name:'North Perry',city:'Hollywood',state:'FL'},
+  {id:'KTMB',name:'Kendall-Tamiami Executive',city:'Miami',state:'FL'},
+  {id:'KOPF',name:'Miami-Opa Locka Executive',city:'Miami',state:'FL'},
+  {id:'KSPG',name:'Albert Whitted',city:'St. Petersburg',state:'FL'},
+  {id:'X21',name:'Arthur Dunn Airpark',city:'Titusville',state:'FL'},
+  {id:'KTIX',name:'Space Coast Regional',city:'Titusville',state:'FL'},
+  {id:'KSEF',name:'Sebring Regional',city:'Sebring',state:'FL'},
+  {id:'KAGR',name:'MacDill AFB Auxiliary',city:'Avon Park',state:'FL'},
+  {id:'KBOW',name:'Bartow Executive',city:'Bartow',state:'FL'},
+  {id:'KPCM',name:'Plant City Municipal',city:'Plant City',state:'FL'},
+  {id:'KZPH',name:'Zephyrhills Municipal',city:'Zephyrhills',state:'FL'},
+  {id:'KBKV',name:'Hernando County',city:'Brooksville',state:'FL'},
+  {id:'KCGC',name:'Crystal River-Captain Tom Davis Field',city:'Crystal River',state:'FL'},
+  {id:'KINF',name:'Inverness',city:'Inverness',state:'FL'},
+  {id:'KCTY',name:'Cross City',city:'Cross City',state:'FL'},
+  {id:'X60',name:'Williston Municipal',city:'Williston',state:'FL'},
+  {id:'KAAF',name:'Apalachicola Regional',city:'Apalachicola',state:'FL'},
+  {id:'KJKA',name:'Jack Edwards National',city:'Gulf Shores',state:'AL'},
+  // Georgia airports
+  {id:'KGVL',name:'Lee Gilmer Memorial',city:'Gainesville',state:'GA'},
+  {id:'KPDK',name:'DeKalb-Peachtree',city:'Atlanta',state:'GA'},
+  {id:'KFTY',name:'Fulton County-Brown Field',city:'Atlanta',state:'GA'},
+  {id:'KLZU',name:'Gwinnett County-Briscoe Field',city:'Lawrenceville',state:'GA'},
+  {id:'KRYY',name:'Cobb County-McCollum Field',city:'Kennesaw',state:'GA'},
+  {id:'KSAV',name:'Savannah/Hilton Head Intl',city:'Savannah',state:'GA'},
+  {id:'KAGS',name:'Augusta Regional',city:'Augusta',state:'GA'},
+  {id:'KMCN',name:'Middle Georgia Regional',city:'Macon',state:'GA'},
+  {id:'KVLD',name:'Valdosta Regional',city:'Valdosta',state:'GA'},
+  {id:'KABY',name:'Southwest Georgia Regional',city:'Albany',state:'GA'},
+  {id:'KCSG',name:'Columbus Metropolitan',city:'Columbus',state:'GA'},
+  {id:'KWRB',name:'Robins AFB',city:'Warner Robins',state:'GA'},
+  {id:'KBQK',name:'Brunswick Golden Isles',city:'Brunswick',state:'GA'},
+  {id:'KSSI',name:'Malcolm McKinnon',city:'St. Simons Island',state:'GA'},
+  // Tennessee
+  {id:'KMKL',name:'McKellar-Sipes Regional',city:'Jackson',state:'TN'},
+  {id:'KTYS',name:'McGhee Tyson',city:'Knoxville',state:'TN'},
+  {id:'KCHA',name:'Chattanooga Metropolitan',city:'Chattanooga',state:'TN'},
+  {id:'KTRI',name:'Tri-Cities Regional',city:'Blountville',state:'TN'},
+  {id:'KJWN',name:'John C. Tune',city:'Nashville',state:'TN'},
+  {id:'KMQY',name:'Smyrna/Rutherford County',city:'Smyrna',state:'TN'},
+  // South Carolina
+  {id:'KCHS',name:'Charleston Intl',city:'Charleston',state:'SC'},
+  {id:'KCAE',name:'Columbia Metropolitan',city:'Columbia',state:'SC'},
+  {id:'KGSP',name:'Greenville-Spartanburg Intl',city:'Greenville',state:'SC'},
+  {id:'KMYR',name:'Myrtle Beach Intl',city:'Myrtle Beach',state:'SC'},
+  {id:'KHXD',name:'Hilton Head',city:'Hilton Head Island',state:'SC'},
+  // North Carolina
+  {id:'KINT',name:'Smith Reynolds',city:'Winston-Salem',state:'NC'},
+  {id:'KAVL',name:'Asheville Regional',city:'Asheville',state:'NC'},
+  {id:'KILM',name:'Wilmington Intl',city:'Wilmington',state:'NC'},
+  {id:'KFAY',name:'Fayetteville Regional',city:'Fayetteville',state:'NC'},
+  // Alabama
+  {id:'KMGM',name:'Montgomery Regional',city:'Montgomery',state:'AL'},
+  {id:'KMOB',name:'Mobile Regional',city:'Mobile',state:'AL'},
+  {id:'KDHN',name:'Dothan Regional',city:'Dothan',state:'AL'},
+  {id:'KTCL',name:'Tuscaloosa National',city:'Tuscaloosa',state:'AL'},
+  {id:'KANB',name:'Anniston Regional',city:'Anniston',state:'AL'},
+  // Texas GA airports
+  {id:'KADS',name:'Addison',city:'Addison',state:'TX'},
+  {id:'KDAL',name:'Dallas Love Field',city:'Dallas',state:'TX'},
+  {id:'KHOU',name:'William P. Hobby',city:'Houston',state:'TX'},
+  {id:'KSGR',name:'Sugar Land Regional',city:'Sugar Land',state:'TX'},
+  {id:'KELP',name:'El Paso Intl',city:'El Paso',state:'TX'},
+  {id:'KGTU',name:'Georgetown Municipal',city:'Georgetown',state:'TX'},
+  {id:'KEDC',name:'Austin Executive',city:'Austin',state:'TX'},
+  {id:'KBAZ',name:'New Braunfels Regional',city:'New Braunfels',state:'TX'},
+  {id:'KCXO',name:'Conroe-North Houston Regional',city:'Conroe',state:'TX'},
+  // Other popular GA airports
+  {id:'KAPA',name:'Centennial',city:'Englewood',state:'CO'},
+  {id:'KBJC',name:'Rocky Mountain Metropolitan',city:'Broomfield',state:'CO'},
+  {id:'KVNY',name:'Van Nuys',city:'Van Nuys',state:'CA'},
+  {id:'KSMO',name:'Santa Monica Municipal',city:'Santa Monica',state:'CA'},
+  {id:'KHPN',name:'Westchester County',city:'White Plains',state:'NY'},
+  {id:'KTEB',name:'Teterboro',city:'Teterboro',state:'NJ'},
+  {id:'KCDW',name:'Essex County',city:'Caldwell',state:'NJ'},
+  {id:'KBED',name:'Laurence G. Hanscom Field',city:'Bedford',state:'MA'},
+  {id:'KOQN',name:'Brandywine',city:'West Chester',state:'PA'},
+  {id:'KPTK',name:'Oakland County Intl',city:'Pontiac',state:'MI'},
+  {id:'KARR',name:'Aurora Municipal',city:'Aurora',state:'IL'},
+  {id:'KDPA',name:'DuPage',city:'West Chicago',state:'IL'},
+  {id:'KPWK',name:'Chicago Executive',city:'Wheeling',state:'IL'},
+  {id:'KFRG',name:'Republic',city:'Farmingdale',state:'NY'},
+  {id:'KISP',name:'Long Island MacArthur',city:'Islip',state:'NY'},
+  {id:'KHEF',name:'Manassas Regional',city:'Manassas',state:'VA'},
+  {id:'KJYO',name:'Leesburg Executive',city:'Leesburg',state:'VA'},
+  {id:'KGAI',name:'Montgomery County Airpark',city:'Gaithersburg',state:'MD'},
+  {id:'KFDK',name:'Frederick Municipal',city:'Frederick',state:'MD'},
+  {id:'KCGS',name:'College Park',city:'College Park',state:'MD'},
+  {id:'KANP',name:'Lee',city:'Annapolis',state:'MD'},
+  {id:'KESN',name:'Easton/Newnam Field',city:'Easton',state:'MD'},
+  {id:'KOXB',name:'Ocean City Municipal',city:'Ocean City',state:'MD'},
+  {id:'KVKX',name:'Potomac Airfield',city:'Fort Washington',state:'MD'},
+  {id:'KFXE',name:'Fort Lauderdale Executive',city:'Fort Lauderdale',state:'FL'},
+  {id:'K2IS',name:'Airglades',city:'Clewiston',state:'FL'},
+  {id:'KOBE',name:'Okeechobee County',city:'Okeechobee',state:'FL'},
+  {id:'KCEW',name:'Bob Sikes',city:'Crestview',state:'FL'},
+  {id:'KDTS',name:'Destin Executive',city:'Destin',state:'FL'},
+  {id:'KASD',name:'Bagdad',city:'Bagdad',state:'FL'}
+];
+
+// ===== KNOWN AIRPORT DATA (elevation, runways, IFR procedures) =====
+const KNOWN_AIRPORTS = {
+  'KHEG': { elev: 86, runways: [
+    { name: '7/25', length: 4000, hdg: 70, surface: 'dry_paved',
+      ifr: { '7': { dep: true, app: true }, '25': { dep: true, app: true } } },
+    { name: '11/29', length: 3500, hdg: 110, surface: 'dry_paved',
+      ifr: { '11': { dep: false, app: false }, '29': { dep: false, app: false } } }
+  ]},
+  'KGNV': { elev: 152, runways: [
+    { name: '7/25', length: 7503, hdg: 70, surface: 'dry_paved',
+      ifr: { '7': { dep: true, app: true }, '25': { dep: true, app: true } } },
+    { name: '11/29', length: 4013, hdg: 112, surface: 'dry_paved',
+      ifr: { '11': { dep: true, app: true }, '29': { dep: true, app: true } } }
+  ]},
+  'KCRG': { elev: 41, runways: [
+    { name: '14/32', length: 4004, hdg: 140, surface: 'dry_paved',
+      ifr: { '14': { dep: true, app: true }, '32': { dep: true, app: true } } },
+    { name: '5/23', length: 4004, hdg: 50, surface: 'dry_paved',
+      ifr: { '5': { dep: true, app: true }, '23': { dep: true, app: true } } }
+  ]},
+  'KSGJ': { elev: 10, runways: [
+    { name: '13/31', length: 5999, hdg: 131, surface: 'dry_paved',
+      ifr: { '13': { dep: true, app: true }, '31': { dep: true, app: true } } },
+    { name: '6/24', length: 2601, hdg: 62, surface: 'dry_paved',
+      ifr: { '6': { dep: false, app: false }, '24': { dep: false, app: false } } }
+  ]}
+};
+
 // ===== POH PERFORMANCE TABLES =====
-// Takeoff at 3400 lbs: [pressAlt] => { grRoll: [0C,10C,20C,30C,40C], over50: [0C,10C,20C,30C,40C] }
 const TO_3400 = {
   0:     { gr: [917,990,1067,1146,1229],    o50: [1432,1539,1650,1764,1883] },
   1000:  { gr: [1011,1092,1176,1264,1355],   o50: [1574,1691,1813,1939,2069] },
@@ -879,7 +1170,6 @@ const TO_3400 = {
   10000: { gr: [2564,2769,2982,3204,3434],   o50: [3870,4158,4457,4767,5088] }
 };
 
-// Landing at 3400 lbs
 const LD_3400 = {
   0:     { gr: [1082,1121,1161,1200,1240], total: [2262,2316,2372,2428,2485] },
   1000:  { gr: [1122,1163,1204,1245,1286], total: [2317,2374,2433,2492,2551] },
@@ -898,14 +1188,195 @@ const ALTS = [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000];
 const TEMPS = [0,10,20,30,40];
 
 let metarRaw = '';
+let metarTimestamp = null; // Date object from METAR
+let metarShowZulu = true;  // toggle state
 let rwyCounter = 1;
+
+// ===== TIMEZONE DETECTION =====
+function getLocalTimezoneName() {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // Map to friendly names
+    if (tz.includes('New_York') || tz.includes('Eastern')) return 'Eastern';
+    if (tz.includes('Chicago') || tz.includes('Central')) return 'Central';
+    if (tz.includes('Denver') || tz.includes('Mountain')) return 'Mountain';
+    if (tz.includes('Los_Angeles') || tz.includes('Pacific')) return 'Pacific';
+    if (tz.includes('Anchorage') || tz.includes('Alaska')) return 'Alaska';
+    if (tz.includes('Honolulu') || tz.includes('Hawaii')) return 'Hawaii';
+    // Return the IANA name as fallback
+    return tz.split('/').pop().replace(/_/g, ' ');
+  } catch(e) {
+    return 'Eastern';
+  }
+}
+
+function getLocalTimezone() {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // Validate it's a real timezone
+    new Date().toLocaleString('en-US', { timeZone: tz });
+    return tz;
+  } catch(e) {
+    return 'America/New_York';
+  }
+}
+
+// ===== METAR TIME PARSING =====
+function parseMetarTimestamp(raw) {
+  // METAR format: KHEG 261956Z ...
+  // The DDHHMM group: day-hour-minute Zulu
+  const timeMatch = raw.match(/\b(\d{2})(\d{2})(\d{2})Z\b/);
+  if (!timeMatch) return null;
+
+  const day = parseInt(timeMatch[1]);
+  const hour = parseInt(timeMatch[2]);
+  const minute = parseInt(timeMatch[3]);
+
+  // Build UTC date (use current year/month, adjust if day seems wrong)
+  const now = new Date();
+  let year = now.getUTCFullYear();
+  let month = now.getUTCMonth(); // 0-indexed
+
+  // If METAR day > today, it's probably from last month
+  if (day > now.getUTCDate() + 1) {
+    month--;
+    if (month < 0) { month = 11; year--; }
+  }
+
+  const dt = new Date(Date.UTC(year, month, day, hour, minute, 0));
+  return dt;
+}
+
+function formatMetarTime() {
+  if (!metarTimestamp) return;
+
+  const display = document.getElementById('metarTimeDisplay');
+  const valueEl = document.getElementById('metarTimeValue');
+  const toggleEl = document.getElementById('metarTimeToggle');
+
+  display.style.display = 'flex';
+
+  if (metarShowZulu) {
+    const d = metarTimestamp;
+    const dayStr = String(d.getUTCDate()).padStart(2,'0');
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const mon = monthNames[d.getUTCMonth()];
+    const hh = String(d.getUTCHours()).padStart(2,'0');
+    const mm = String(d.getUTCMinutes()).padStart(2,'0');
+    valueEl.textContent = `${dayStr} ${mon} ${d.getUTCFullYear()} ${hh}:${mm}Z`;
+    toggleEl.textContent = 'Zulu';
+  } else {
+    const tz = getLocalTimezone();
+    const tzName = getLocalTimezoneName();
+    const opts = {
+      timeZone: tz,
+      year: 'numeric', month: 'short', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hour12: true
+    };
+    valueEl.textContent = metarTimestamp.toLocaleString('en-US', opts) + ' ' + tzName;
+    toggleEl.textContent = tzName;
+  }
+}
+
+function toggleMetarTimeZone() {
+  metarShowZulu = !metarShowZulu;
+  formatMetarTime();
+}
+
+// ===== AIRPORT SEARCH =====
+function initAirportSearch() {
+  const input = document.getElementById('airportSearch');
+  const dropdown = document.getElementById('airportDropdown');
+  let activeIdx = -1;
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length < 2) {
+      dropdown.classList.remove('open');
+      return;
+    }
+
+    const matches = US_AIRPORTS.filter(ap => {
+      return ap.id.toLowerCase().includes(q) ||
+             ap.name.toLowerCase().includes(q) ||
+             ap.city.toLowerCase().includes(q) ||
+             (ap.city + ' ' + ap.state).toLowerCase().includes(q) ||
+             (ap.city + ', ' + ap.state).toLowerCase().includes(q);
+    }).slice(0, 8);
+
+    if (matches.length === 0) {
+      dropdown.innerHTML = '<div class="airport-dropdown-item" style="color:var(--text-dim);">No matches found</div>';
+      dropdown.classList.add('open');
+      activeIdx = -1;
+      return;
+    }
+
+    dropdown.innerHTML = matches.map((ap, i) => `
+      <div class="airport-dropdown-item" data-id="${ap.id}" data-idx="${i}">
+        <span class="ap-id">${ap.id}</span>
+        <span class="ap-name">${ap.name}</span><br>
+        <span class="ap-city">${ap.city}, ${ap.state}</span>
+      </div>
+    `).join('');
+
+    dropdown.classList.add('open');
+    activeIdx = -1;
+
+    // Click handlers
+    dropdown.querySelectorAll('.airport-dropdown-item[data-id]').forEach(item => {
+      item.addEventListener('click', () => {
+        selectAirport(item.dataset.id);
+      });
+    });
+  });
+
+  // Keyboard navigation
+  input.addEventListener('keydown', (e) => {
+    const items = dropdown.querySelectorAll('.airport-dropdown-item[data-id]');
+    if (!items.length) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, items.length - 1);
+      items.forEach((it, i) => it.classList.toggle('active', i === activeIdx));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, 0);
+      items.forEach((it, i) => it.classList.toggle('active', i === activeIdx));
+    } else if (e.key === 'Enter' && activeIdx >= 0) {
+      e.preventDefault();
+      selectAirport(items[activeIdx].dataset.id);
+    }
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.airport-search-wrap')) {
+      dropdown.classList.remove('open');
+    }
+  });
+}
+
+function selectAirport(icao) {
+  document.getElementById('airportId').value = icao;
+  document.getElementById('airportSearch').value = '';
+  document.getElementById('airportDropdown').classList.remove('open');
+
+  // Save to localStorage
+  localStorage.setItem('told_lastAirport', icao);
+
+  // Fill known airport data
+  fillAirportData(icao);
+
+  // Auto-fetch METAR
+  fetchMetar();
+}
 
 // ===== FLIGHT RULES DETECTION =====
 function detectFlightRules() {
   const ceiling = parseFloat(document.getElementById('ceiling').value);
   const vis = parseFloat(document.getElementById('visibility').value);
 
-  // Default if no ceiling/vis entered
   if (isNaN(ceiling) && isNaN(vis)) return 'VFR';
 
   const c = isNaN(ceiling) ? 99999 : ceiling;
@@ -951,39 +1422,127 @@ function updateFlightRules() {
   }
 }
 
-// Update flight rules when ceiling/vis change
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('ceiling').addEventListener('input', updateFlightRules);
-  document.getElementById('visibility').addEventListener('input', updateFlightRules);
-  document.getElementById('airportId').value = 'KHEG';
-});
-
-function addRunway() {
-  const container = document.getElementById('runwayInputs');
-  const idx = rwyCounter++;
+// ===== RUNWAY INPUT CREATION =====
+function createRunwayGroup(rwy, idx) {
   const group = document.createElement('div');
   group.className = 'runway-input-group';
   group.style.cssText = 'margin-bottom:12px;';
+
+  const rwyName = rwy ? rwy.name : '';
+  const rwyLength = rwy ? rwy.length : '';
+  const rwyHdg = rwy ? rwy.hdg : '';
+  const rwySurface = rwy ? rwy.surface : 'dry_paved';
+
+  // Parse runway names for IFR labels
+  const parts = rwyName ? rwyName.split('/') : ['', ''];
+  const rwy1Name = parts[0] || '';
+  const rwy2Name = parts.length > 1 ? parts[1] : '';
+
+  // IFR procedure states
+  const ifr = rwy && rwy.ifr ? rwy.ifr : {};
+  const rwy1Dep = ifr[rwy1Name] ? ifr[rwy1Name].dep : false;
+  const rwy1App = ifr[rwy1Name] ? ifr[rwy1Name].app : false;
+  const rwy2Dep = ifr[rwy2Name] ? ifr[rwy2Name].dep : false;
+  const rwy2App = ifr[rwy2Name] ? ifr[rwy2Name].app : false;
+
+  const showRemove = idx > 0;
+
   group.innerHTML = `
-    <div class="runway-input-row" >
-      <div class="field"><label>Runway</label><input type="text" class="rwyName" placeholder="11/29" maxlength="10"></div>
-      <div class="field"><label>Length (ft)</label><input type="number" class="rwyLength" placeholder="3500"></div>
-      <div class="field"><label>Heading (Rwy 1)</label><input type="number" class="rwyHdg" placeholder="110" min="0" max="360"></div>
-      <div class="field"><label>Surface</label><select class="rwySurface"><option value="dry_paved">Dry Paved</option><option value="dry_grass">Dry Grass</option><option value="wet_grass">Wet Grass</option></select></div>
-      <button class="btn btn-secondary" onclick="this.closest('.runway-input-group').remove()" style="font-size:12px; padding:8px 12px; margin-bottom:2px;">&times;</button>
+    <div class="runway-input-row">
+      <div class="field"><label>Runway</label><input type="text" class="rwyName" value="${rwyName}" placeholder="7/25" maxlength="10" oninput="updateIfrLabels(this)"></div>
+      <div class="field"><label>Length (ft)</label><input type="number" class="rwyLength" value="${rwyLength}" placeholder="4000"></div>
+      <div class="field"><label>Heading (1st Rwy)</label><input type="number" class="rwyHdg" value="${rwyHdg}" placeholder="70" min="0" max="360"></div>
+      <div class="field"><label>Surface</label><select class="rwySurface"><option value="dry_paved" ${rwySurface==='dry_paved'?'selected':''}>Dry Paved</option><option value="dry_grass" ${rwySurface==='dry_grass'?'selected':''}>Dry Grass</option><option value="wet_grass" ${rwySurface==='wet_grass'?'selected':''}>Wet Grass</option></select></div>
+      ${showRemove ? '<button class="btn btn-secondary" onclick="this.closest(\'.runway-input-group\').remove()" style="font-size:12px; padding:8px 12px; margin-bottom:2px;">&times;</button>' : ''}
     </div>
-    <div class="ifr-proc-row">
-      <span style="color:var(--text-dim); font-size:12px; min-width:90px;">IFR Procedures:</span>
-      <input type="checkbox" class="hasIfrDep1" id="ifrDep1_${idx}"><label for="ifrDep1_${idx}">Rwy 1 Departure</label>
-      <input type="checkbox" class="hasIfrApp1" id="ifrApp1_${idx}"><label for="ifrApp1_${idx}">Rwy 1 Approach</label>
-      <span style="color:var(--border); margin:0 4px;">|</span>
-      <input type="checkbox" class="hasIfrDep2" id="ifrDep2_${idx}"><label for="ifrDep2_${idx}">Rwy 2 Departure</label>
-      <input type="checkbox" class="hasIfrApp2" id="ifrApp2_${idx}"><label for="ifrApp2_${idx}">Rwy 2 Approach</label>
+    <div class="ifr-proc-section">
+      <div class="ifr-proc-label">IFR Procedures</div>
+      <div class="ifr-rwy-direction">
+        <span class="ifr-rwy-name rwy1Label">Rwy ${rwy1Name || '?'}</span>
+        <div class="ifr-toggle-group">
+          <label class="ifr-pill ${rwy1Dep ? 'active' : ''}" onclick="togglePill(this)">
+            <input type="checkbox" class="hasIfrDep1" ${rwy1Dep ? 'checked' : ''}>
+            <span class="pill-icon">&#9992;</span> Departure
+          </label>
+          <label class="ifr-pill ${rwy1App ? 'active' : ''}" onclick="togglePill(this)">
+            <input type="checkbox" class="hasIfrApp1" ${rwy1App ? 'checked' : ''}>
+            <span class="pill-icon">&#128747;</span> Approach
+          </label>
+        </div>
+      </div>
+      <div class="ifr-rwy-direction">
+        <span class="ifr-rwy-name rwy2Label">Rwy ${rwy2Name || '?'}</span>
+        <div class="ifr-toggle-group">
+          <label class="ifr-pill ${rwy2Dep ? 'active' : ''}" onclick="togglePill(this)">
+            <input type="checkbox" class="hasIfrDep2" ${rwy2Dep ? 'checked' : ''}>
+            <span class="pill-icon">&#9992;</span> Departure
+          </label>
+          <label class="ifr-pill ${rwy2App ? 'active' : ''}" onclick="togglePill(this)">
+            <input type="checkbox" class="hasIfrApp2" ${rwy2App ? 'checked' : ''}>
+            <span class="pill-icon">&#128747;</span> Approach
+          </label>
+        </div>
+      </div>
     </div>
   `;
+
+  return group;
+}
+
+function togglePill(el) {
+  const cb = el.querySelector('input[type="checkbox"]');
+  // The click already toggled the checkbox, so just update class
+  setTimeout(() => {
+    el.classList.toggle('active', cb.checked);
+  }, 0);
+}
+
+function updateIfrLabels(input) {
+  const group = input.closest('.runway-input-group');
+  const name = input.value.trim();
+  const parts = name.split('/');
+  const rwy1 = parts[0] || '?';
+  const rwy2 = parts.length > 1 ? parts[1] : '?';
+  const label1 = group.querySelector('.rwy1Label');
+  const label2 = group.querySelector('.rwy2Label');
+  if (label1) label1.textContent = `Rwy ${rwy1}`;
+  if (label2) label2.textContent = `Rwy ${rwy2}`;
+}
+
+function addRunway(rwy) {
+  const container = document.getElementById('runwayInputs');
+  const idx = rwyCounter++;
+  const group = createRunwayGroup(rwy || null, idx);
   container.appendChild(group);
 }
 
+// ===== FILL KNOWN AIRPORT DATA =====
+function fillAirportData(icao) {
+  if (KNOWN_AIRPORTS[icao]) {
+    const ap = KNOWN_AIRPORTS[icao];
+    document.getElementById('elevation').value = ap.elev;
+
+    const container = document.getElementById('runwayInputs');
+    container.innerHTML = '';
+    rwyCounter = 0;
+
+    ap.runways.forEach((rwy) => {
+      const idx = rwyCounter++;
+      const group = createRunwayGroup(rwy, idx);
+      container.appendChild(group);
+    });
+  } else {
+    // Unknown airport: clear runways, let user enter manually
+    const container = document.getElementById('runwayInputs');
+    // Only clear if there are no manually-entered runways yet
+    // (i.e., if the runway fields are still from a previous known airport)
+    container.innerHTML = '';
+    rwyCounter = 0;
+    addRunway();
+  }
+}
+
+// ===== METAR FETCH =====
 async function fetchMetar() {
   const id = document.getElementById('airportId').value.trim().toUpperCase();
   if (!id) return;
@@ -991,13 +1550,17 @@ async function fetchMetar() {
   btn.disabled = true; btn.textContent = 'Fetching...';
 
   try {
-    // Try ICAO format
     const icao = id.length === 3 ? 'K' + id : id;
     const resp = await fetch(`https://metar.vatsim.net/metar.php?id=${icao}`);
     const text = await resp.text();
 
     if (text && text.includes(icao)) {
       metarRaw = text.trim();
+
+      // Parse METAR timestamp
+      metarTimestamp = parseMetarTimestamp(metarRaw);
+      formatMetarTime();
+
       parseMetar(metarRaw);
       btn.textContent = 'Fetched!';
       setTimeout(() => { btn.disabled = false; btn.textContent = 'Fetch METAR'; }, 2000);
@@ -1011,7 +1574,7 @@ async function fetchMetar() {
 }
 
 function parseMetar(raw) {
-  // Wind: dddssKT or dddssGggKT or VRB
+  // Wind
   const windMatch = raw.match(/\b(\d{3}|VRB)(\d{2,3})(G(\d{2,3}))?KT\b/);
   if (windMatch) {
     const dir = windMatch[1] === 'VRB' ? 0 : parseInt(windMatch[1]);
@@ -1020,13 +1583,13 @@ function parseMetar(raw) {
     if (windMatch[4]) document.getElementById('windGust').value = parseInt(windMatch[4]);
   }
 
-  // Altimeter: Adddd
+  // Altimeter
   const altMatch = raw.match(/\bA(\d{4})\b/);
   if (altMatch) {
     document.getElementById('altimeter').value = (parseInt(altMatch[1]) / 100).toFixed(2);
   }
 
-  // Temperature: TT/DD (may have M prefix for negative)
+  // Temperature
   const tempMatch = raw.match(/\b(M?\d{2})\/(M?\d{2})\b/);
   if (tempMatch) {
     let temp = parseInt(tempMatch[1].replace('M', '-'));
@@ -1034,7 +1597,7 @@ function parseMetar(raw) {
     document.getElementById('oatUnit').value = 'C';
   }
 
-  // Visibility: ddSM or d/dSM or ddddSM (in whole/fraction SM)
+  // Visibility
   const visMatch = raw.match(/\b(\d+)\s*(?:(\d+)\/(\d+))?\s*SM\b/);
   if (visMatch) {
     let vis = parseInt(visMatch[1]);
@@ -1044,7 +1607,7 @@ function parseMetar(raw) {
     document.getElementById('visibility').value = vis;
   }
 
-  // Ceiling: BKN or OVC layers — lowest BKN/OVC is the ceiling
+  // Ceiling
   const cloudRegex = /(BKN|OVC)(\d{3})/g;
   let lowestCeiling = 99999;
   let match;
@@ -1060,56 +1623,13 @@ function parseMetar(raw) {
 
   updateFlightRules();
 
-  // Try to fill known airport data
+  // Fill known airport data
   const icao = raw.substring(0, 4);
+  document.getElementById('airportId').value = icao;
   fillAirportData(icao);
-}
 
-function fillAirportData(icao) {
-  // Known airports with IFR procedure data
-  // ifrDep1/ifrApp1 = first runway direction, ifrDep2/ifrApp2 = reciprocal
-  const airports = {
-    'KHEG': { elev: 86, runways: [
-      { name: '7/25', length: 4000, hdg: 70, surface: 'dry_paved',
-        ifrDep1: true, ifrApp1: true,   // Rwy 7: RNAV departure, RNAV-7 approach
-        ifrDep2: true, ifrApp2: true },  // Rwy 25: RNAV departure, RNAV-25 approach
-      { name: '11/29', length: 3500, hdg: 110, surface: 'dry_paved',
-        ifrDep1: false, ifrApp1: false,  // Rwy 11: no published IFR
-        ifrDep2: false, ifrApp2: false }  // Rwy 29: no published IFR
-    ]}
-  };
-
-  if (airports[icao]) {
-    const ap = airports[icao];
-    document.getElementById('elevation').value = ap.elev;
-    // Clear and set runways
-    const container = document.getElementById('runwayInputs');
-    container.innerHTML = '';
-
-    ap.runways.forEach((rwy, i) => {
-      const idx = i === 0 ? 0 : rwyCounter++;
-      const group = document.createElement('div');
-      group.className = 'runway-input-group';
-      group.style.cssText = 'margin-bottom:12px;';
-      group.innerHTML = `
-        <div class="runway-input-row" >
-          <div class="field"><label>Runway</label><input type="text" class="rwyName" value="${rwy.name}" maxlength="10"></div>
-          <div class="field"><label>Length (ft)</label><input type="number" class="rwyLength" value="${rwy.length}"></div>
-          <div class="field"><label>Heading (Rwy 1)</label><input type="number" class="rwyHdg" value="${rwy.hdg}" min="0" max="360"></div>
-          <div class="field"><label>Surface</label><select class="rwySurface"><option value="dry_paved" ${rwy.surface==='dry_paved'?'selected':''}>Dry Paved</option><option value="dry_grass" ${rwy.surface==='dry_grass'?'selected':''}>Dry Grass</option><option value="wet_grass" ${rwy.surface==='wet_grass'?'selected':''}>Wet Grass</option></select></div>
-        </div>
-        <div class="ifr-proc-row">
-          <span style="color:var(--text-dim); font-size:12px; min-width:90px;">IFR Procedures:</span>
-          <input type="checkbox" class="hasIfrDep1" id="ifrDep1_${idx}" ${rwy.ifrDep1?'checked':''}><label for="ifrDep1_${idx}">Rwy 1 Departure</label>
-          <input type="checkbox" class="hasIfrApp1" id="ifrApp1_${idx}" ${rwy.ifrApp1?'checked':''}><label for="ifrApp1_${idx}">Rwy 1 Approach</label>
-          <span style="color:var(--border); margin:0 4px;">|</span>
-          <input type="checkbox" class="hasIfrDep2" id="ifrDep2_${idx}" ${rwy.ifrDep2?'checked':''}><label for="ifrDep2_${idx}">Rwy 2 Departure</label>
-          <input type="checkbox" class="hasIfrApp2" id="ifrApp2_${idx}" ${rwy.ifrApp2?'checked':''}><label for="ifrApp2_${idx}">Rwy 2 Approach</label>
-        </div>
-      `;
-      container.appendChild(group);
-    });
-  }
+  // Save last airport
+  localStorage.setItem('told_lastAirport', icao);
 }
 
 // ===== INTERPOLATION ENGINE =====
@@ -1136,7 +1656,6 @@ function interpAlt(table, field, pressAlt, tempC) {
 
 // ===== MAIN CALCULATION =====
 function calculate() {
-  // Gather inputs
   let oat = parseFloat(document.getElementById('oat').value);
   const oatUnit = document.getElementById('oatUnit').value;
   const altimeter = parseFloat(document.getElementById('altimeter').value);
@@ -1153,21 +1672,16 @@ function calculate() {
     return;
   }
 
-  // Convert F to C
   if (oatUnit === 'F') oat = (oat - 32) * 5 / 9;
 
-  // Pressure altitude
   const pressAlt = (29.92 - altimeter) * 1000 + elevation;
-
-  // ISA temp at pressure altitude
   const isaTemp = 15 - 2 * (pressAlt / 1000);
   const densAlt = pressAlt + 120 * (oat - isaTemp);
 
-  // Determine flight rules
   const ifrActive = isIfrConditions();
   updateFlightRules();
 
-  // Parse runways with IFR procedure data
+  // Parse runways
   const groups = document.querySelectorAll('.runway-input-group');
   const runways = [];
   groups.forEach(group => {
@@ -1203,18 +1717,15 @@ function calculate() {
     return;
   }
 
-  // Weight factor for scaling (simplified linear between 2900 and 3400)
   const toWF = toWeight / 3400;
   const ldWF = ldWeight / 3400;
 
-  // Compute for each runway direction
   let warnings = [];
   let bestTORwy = null;
   let bestLDRwy = null;
   let bestTOHeadwind = -999;
   let bestLDHeadwind = -999;
 
-  // First pass: compute wind for all runways to find best IFR-eligible ones
   const windData = runways.map(rwy => {
     const angle = Math.abs(windDir - rwy.hdg) * Math.PI / 180;
     const headwind = windSpd * Math.cos(angle);
@@ -1222,7 +1733,6 @@ function calculate() {
     return { headwind, crosswind };
   });
 
-  // Select best runway for takeoff and landing considering IFR
   runways.forEach((rwy, i) => {
     const hw = windData[i].headwind;
     const toEligible = !ifrActive || rwy.hasIfrDep;
@@ -1238,7 +1748,6 @@ function calculate() {
     }
   });
 
-  // If IFR and no eligible runways found, warn
   if (ifrActive && !bestTORwy) {
     warnings.push('IFR CONDITIONS: No runway has a published IFR departure procedure');
   }
@@ -1247,41 +1756,33 @@ function calculate() {
   }
 
   const results = runways.map((rwy, rwyIdx) => {
-    // Wind components
     const angle = Math.abs(windDir - rwy.hdg) * Math.PI / 180;
     let headwind = windSpd * Math.cos(angle);
     const crosswind = Math.abs(windSpd * Math.sin(angle));
     const gustXwind = windGust > 0 ? Math.abs(windGust * Math.sin(angle)) : crosswind;
-
-    // Use gust for tailwind calculation if applicable
     const gustHeadwind = windGust > 0 ? windGust * Math.cos(angle) : headwind;
     const effectiveHeadwind = headwind >= 0 ? headwind : Math.min(headwind, gustHeadwind);
 
-    // Base takeoff distances (3400 lbs table)
     let toGR = interpAlt(TO_3400, 'gr', pressAlt, oat);
     let toO50 = interpAlt(TO_3400, 'o50', pressAlt, oat);
 
-    // Weight scaling (approximate: square relationship)
     const toWFsq = toWF * toWF;
     toGR *= toWFsq;
     toO50 *= toWFsq;
 
-    // Surface correction (ground roll only)
     let surfaceFactor = 1.0;
     if (rwy.surface === 'dry_grass') surfaceFactor = 1.20;
     else if (rwy.surface === 'wet_grass') surfaceFactor = 1.30;
 
     const toGRsurf = toGR * surfaceFactor;
-    const toO50surf = toO50; // Over-50 not corrected for surface per POH
+    const toO50surf = toO50;
 
-    // A/C correction
     const acGR = acOn ? 100 : 0;
     const acO50 = acOn ? 150 : 0;
 
     const toGRbase = toGRsurf + acGR;
     const toO50base = toO50surf + acO50;
 
-    // Wind correction for takeoff
     let toWindFactor = 1.0;
     if (headwind >= 0) {
       toWindFactor = 1 - (headwind / 12 * 0.10);
@@ -1293,23 +1794,19 @@ function calculate() {
     const toGRfinal = Math.round(toGRbase * toWindFactor);
     const toO50final = Math.round(toO50base * toWindFactor);
 
-    // Base landing distances (3400 lbs table)
     let ldGR = interpAlt(LD_3400, 'gr', pressAlt, oat);
     let ldTotal = interpAlt(LD_3400, 'total', pressAlt, oat);
 
-    // Weight scaling
     const ldWFsq = ldWF * ldWF;
     ldGR *= ldWFsq;
     ldTotal *= ldWFsq;
 
-    // Surface correction for landing ground roll
     let ldSurfFactor = 1.0;
     if (rwy.surface === 'dry_grass') ldSurfFactor = 1.20;
     else if (rwy.surface === 'wet_grass') ldSurfFactor = 1.60;
 
     const ldGRsurf = ldGR * ldSurfFactor;
 
-    // Wind correction for landing
     let ldWindFactor = 1.0;
     if (headwind >= 0) {
       ldWindFactor = 1 - (headwind / 13 * 0.10);
@@ -1321,18 +1818,15 @@ function calculate() {
     const ldGRfinal = Math.round(ldGRsurf * ldWindFactor);
     const ldTotalFinal = Math.round(ldTotal * ldWindFactor);
 
-    // Margins
     const toGRmargin = rwy.length - toGRfinal;
     const toO50margin = rwy.length - toO50final;
     const ldGRmargin = rwy.length - ldGRfinal;
     const ldTotalMargin = rwy.length - ldTotalFinal;
 
-    // Warnings
     if (toO50final > rwy.length) warnings.push(`RWY ${rwy.name}: Takeoff over-50' distance (${toO50final} ft) EXCEEDS runway (${rwy.length} ft)`);
     if (ldTotalFinal > rwy.length) warnings.push(`RWY ${rwy.name}: Landing total distance (${ldTotalFinal} ft) EXCEEDS runway (${rwy.length} ft)`);
     if (crosswind > 15) warnings.push(`RWY ${rwy.name}: Crosswind ${Math.round(crosswind)} kts exceeds 15 kts advisory`);
 
-    // IFR eligibility
     const ifrTOeligible = !ifrActive || rwy.hasIfrDep;
     const ifrLDeligible = !ifrActive || rwy.hasIfrApp;
 
@@ -1360,13 +1854,11 @@ function calculate() {
     };
   });
 
-  // Sort: recommended TO runway first, then by headwind
   results.sort((a, b) => {
     if (a.isRecommendedTO) return -1;
     if (b.isRecommendedTO) return 1;
     if (a.isRecommendedLD && !b.isRecommendedTO) return -1;
     if (b.isRecommendedLD && !a.isRecommendedTO) return 1;
-    // IFR eligible before ineligible
     const aElig = a.ifrTOeligible || a.ifrLDeligible;
     const bElig = b.ifrTOeligible || b.ifrLDeligible;
     if (aElig && !bElig) return -1;
@@ -1397,16 +1889,13 @@ function calculate() {
 function renderResults(results, ctx) {
   document.getElementById('results').classList.add('visible');
 
-  // Title
   const airportId = document.getElementById('airportId').value.trim().toUpperCase();
   const now = new Date();
   document.getElementById('resultsTitle').textContent =
     `TOLD Card ${airportId ? '- ' + airportId : ''} - ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
 
-  // Flight rules badge for results
   const frClass = ctx.flightRules.toLowerCase();
 
-  // Conditions
   document.getElementById('conditionsGrid').innerHTML = `
     <div class="cond-item"><div class="label">Flight Rules</div><div class="value"><span class="fr-badge ${frClass}" style="font-size:14px; padding:3px 10px;">${ctx.flightRules}</span></div></div>
     <div class="cond-item"><div class="label">Pressure Alt</div><div class="value">${ctx.pressAlt.toLocaleString()} ft</div></div>
@@ -1476,7 +1965,6 @@ function renderResults(results, ctx) {
       ? `<span class="xwind-warning">XWIND ${r.crosswind} KT EXCEEDS 15 KT</span>`
       : '';
 
-    // IFR procedure badges
     let ifrBadges = '';
     if (ctx.ifrActive) {
       if (r.ifrTOeligible && r.ifrLDeligible) {
@@ -1490,7 +1978,6 @@ function renderResults(results, ctx) {
       }
     }
 
-    // Recommended badge text
     let recBadge = '';
     if (!ifrExcluded) {
       if (isRecTO && isRecLD) {
@@ -1600,11 +2087,27 @@ function renderResults(results, ctx) {
     </ul>
   `;
 
-  // Scroll to results
   document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
 }
 
-// Pre-fill handled in the DOMContentLoaded listener above
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('ceiling').addEventListener('input', updateFlightRules);
+  document.getElementById('visibility').addEventListener('input', updateFlightRules);
+
+  // Initialize airport search
+  initAirportSearch();
+
+  // Restore last airport or start empty
+  const lastAirport = localStorage.getItem('told_lastAirport');
+  if (lastAirport) {
+    document.getElementById('airportId').value = lastAirport;
+    fillAirportData(lastAirport);
+  } else {
+    // Start with one empty runway row
+    addRunway();
+  }
+});
 
 // Register service worker for offline PWA support
 if ('serviceWorker' in navigator) {
