@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" ry="96" fill="#0a1628"/>
+  <g transform="translate(256, 210)" fill="#c8ddf0">
+    <!-- Fuselage -->
+    <ellipse cx="0" cy="0" rx="18" ry="110" fill="#e8f0fa"/>
+    <!-- Wings -->
+    <path d="M-12,10 L-140,55 L-140,68 L-12,35 Z" fill="#c8ddf0"/>
+    <path d="M12,10 L140,55 L140,68 L12,35 Z" fill="#c8ddf0"/>
+    <!-- Tail wings -->
+    <path d="M-10,-85 L-60,-65 L-60,-55 L-10,-70 Z" fill="#c8ddf0"/>
+    <path d="M10,-85 L60,-65 L60,-55 L10,-70 Z" fill="#c8ddf0"/>
+    <!-- Vertical stabilizer -->
+    <path d="M0,-110 L0,-70 L6,-70 L10,-110 Z" fill="#e8f0fa"/>
+    <!-- Nose highlight -->
+    <ellipse cx="0" cy="100" rx="10" ry="20" fill="#ffffff" opacity="0.3"/>
+  </g>
+  <!-- TOLD text -->
+  <text x="256" y="420" text-anchor="middle" font-family="SF Pro Display, Helvetica Neue, Arial, sans-serif" font-size="88" font-weight="800" letter-spacing="12" fill="#ffffff">TOLD</text>
+</svg>

@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>N723GT TOLD Calculator</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a1628">
+
+<!-- iOS PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TOLD">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>
+  :root {
+    --navy: #0a1628;
+    --dark-blue: #122240;
+    --blue: #1a3358;
+    --accent: #3b82f6;
+    --accent-light: #60a5fa;
+    --green: #22c55e;
+    --yellow: #eab308;
+    --red: #ef4444;
+    --orange: #f97316;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --border: #334155;
+    --card: #1e293b;
+    --card-light: #263549;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    min-height: 100vh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .header {
+    background: linear-gradient(135deg, var(--dark-blue), var(--blue));
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-icon {
+    width: 48px; height: 48px;
+    background: var(--accent);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+
+  .header-text h1 {
+    font-size: 20px; font-weight: 700; letter-spacing: -0.3px;
+  }
+
+  .header-text p {
+    font-size: 13px; color: var(--text-dim); margin-top: 2px;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  /* Input Panel */
+  .input-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .input-panel h2 {
+    font-size: 16px; font-weight: 600; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .input-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 4px; }
+
+  .field label {
+    font-size: 12px; font-weight: 500; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .field input, .field select {
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field input:focus, .field select:focus {
+    border-color: var(--accent);
+  }
+
+  .field input::placeholder { color: var(--text-dim); opacity: 0.5; }
+
+  .airport-row {
+    display: flex; gap: 12px; align-items: flex-end; margin-bottom: 20px;
+  }
+
+  .airport-row .field { flex: 1; }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover { background: var(--accent-light); }
+
+  .btn-primary:disabled {
+    opacity: 0.5; cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    background: var(--card-light);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover { background: var(--blue); }
+
+  .btn-calc {
+    background: var(--green);
+    color: var(--navy);
+    font-size: 16px;
+    padding: 14px 32px;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .btn-calc:hover { filter: brightness(1.1); }
+
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  .subsection-title {
+    font-size: 13px; font-weight: 600; color: var(--accent-light);
+    margin-bottom: 12px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .checkbox-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; color: var(--text);
+  }
+
+  .checkbox-row input[type="checkbox"] {
+    width: 18px; height: 18px; accent-color: var(--accent);
+  }
+
+  /* Results */
+  .results { display: none; }
+  .results.visible { display: block; }
+
+  .results-header {
+    background: linear-gradient(135deg, var(--dark-blue), var(--blue));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .results-header h2 {
+    font-size: 18px; font-weight: 700; margin-bottom: 12px;
+  }
+
+  .conditions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .cond-item {
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 10px 14px;
+  }
+
+  .cond-item .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+  .cond-item .value { font-size: 18px; font-weight: 700; margin-top: 2px; }
+
+  .metar-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    word-break: break-all;
+  }
+
+  .metar-bar strong { color: var(--text); }
+
+  .runway-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s;
+  }
+
+  .runway-card.recommended {
+    border-color: var(--green);
+    box-shadow: 0 0 0 1px var(--green), 0 4px 20px rgba(34, 197, 94, 0.15);
+  }
+
+  .runway-card-header {
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--card-light);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .rwy-name {
+    font-size: 20px; font-weight: 800; letter-spacing: 1px;
+  }
+
+  .rwy-info {
+    font-size: 13px; color: var(--text-dim);
+  }
+
+  .rwy-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .badge-recommended { background: var(--green); color: var(--navy); }
+  .badge-headwind { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge-tailwind { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  .wind-strip {
+    padding: 10px 20px;
+    display: flex; gap: 24px;
+    font-size: 13px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .wind-strip span { color: var(--text-dim); }
+  .wind-strip strong { color: var(--text); }
+
+  .perf-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .perf-section {
+    padding: 16px 20px;
+  }
+
+  .perf-section:first-child {
+    border-right: 1px solid var(--border);
+  }
+
+  .perf-section h4 {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent-light);
+    margin-bottom: 12px;
+  }
+
+  .perf-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0;
+    font-size: 14px;
+  }
+
+  .perf-row .perf-label { color: var(--text-dim); }
+  .perf-row .perf-value { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  .margin-bar {
+    margin-top: 8px;
+    height: 6px;
+    background: var(--navy);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .margin-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  .margin-text {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    display: flex; justify-content: space-between;
+  }
+
+  .vspeeds-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+
+  .vspeeds-card h3 {
+    font-size: 14px; font-weight: 600; margin-bottom: 12px;
+    text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-light);
+  }
+
+  .vspeeds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  .vspeed-item {
+    background: var(--card-light);
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+  }
+
+  .vspeed-item .label { font-size: 11px; color: var(--text-dim); }
+  .vspeed-item .speed { font-size: 22px; font-weight: 800; margin-top: 2px; }
+  .vspeed-item .unit { font-size: 11px; color: var(--text-dim); }
+
+  .assumptions {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+
+  .assumptions h3 {
+    font-size: 13px; font-weight: 600; color: var(--text-dim); margin-bottom: 8px;
+  }
+
+  .assumptions ul {
+    list-style: none;
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+
+  .assumptions li {
+    background: var(--card-light);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .disclaimer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    margin-top: 24px;
+  }
+
+  .disclaimer strong { color: var(--yellow); }
+
+  .warning-banner {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--red);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    color: var(--red);
+    font-weight: 600;
+    font-size: 14px;
+    display: none;
+  }
+
+  .warning-banner.visible { display: block; }
+
+  .tat-note {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--accent-light);
+    display: none;
+  }
+
+  .tat-note.visible { display: block; }
+
+  .xwind-warning {
+    color: var(--orange);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Flight Rules Indicator */
+  .flight-rules-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-light);
+  }
+
+  .fr-indicator {
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .fr-badge {
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+
+  .fr-badge.vfr { background: var(--green); color: var(--navy); }
+  .fr-badge.mvfr { background: var(--accent); color: white; }
+  .fr-badge.ifr { background: var(--red); color: white; }
+  .fr-badge.lifr { background: #d946ef; color: white; }
+
+  .fr-detail {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .fr-override {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .fr-override label {
+    font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;
+  }
+
+  .toggle-switch {
+    position: relative;
+    width: 44px; height: 24px;
+    display: inline-block;
+  }
+
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+  .toggle-slider {
+    position: absolute; inset: 0;
+    background: var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    left: 3px; bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+  }
+
+  .toggle-switch input:checked + .toggle-slider {
+    background: var(--red);
+  }
+
+  .toggle-switch input:checked + .toggle-slider::before {
+    transform: translateX(20px);
+  }
+
+  .fr-override-select {
+    background: var(--navy);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: inherit;
+  }
+
+  .ifr-proc-row {
+    display: flex; gap: 12px; align-items: center;
+    margin-top: 4px;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    font-size: 13px;
+  }
+
+  .ifr-proc-row label {
+    text-transform: none !important;
+    font-size: 13px !important;
+    color: var(--text) !important;
+  }
+
+  .ifr-proc-row input[type="checkbox"] {
+    width: 16px; height: 16px;
+    accent-color: var(--accent);
+  }
+
+  .badge-ifr-only {
+    background: rgba(239,68,68,0.15);
+    color: var(--red);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  .badge-no-proc {
+    background: rgba(239,68,68,0.1);
+    color: var(--red);
+  }
+
+  .runway-card.ifr-excluded {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .ifr-excluded-label {
+    font-size: 12px;
+    color: var(--red);
+    font-weight: 600;
+    padding: 8px 20px;
+    background: rgba(239,68,68,0.08);
+    border-top: 1px solid rgba(239,68,68,0.2);
+  }
+
+  .ifr-info-banner {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--red);
+    display: none;
+  }
+
+  .ifr-info-banner.visible { display: block; }
+
+  @media (max-width: 640px) {
+    .container { padding: 12px; }
+    .input-grid { grid-template-columns: 1fr 1fr; }
+    .perf-grid { grid-template-columns: 1fr; }
+    .perf-section:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+    .airport-row { flex-direction: column; }
+    .conditions-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">&#9992;</div>
+  <div class="header-text">
+    <h1>N723GT TOLD Calculator</h1>
+    <p>2007 Cirrus SR22 TN &middot; S/N 2308 &middot; Tornado Alley Turbo</p>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Input Panel -->
+  <div class="input-panel">
+    <h2>&#9881; Flight Parameters</h2>
+
+    <div class="airport-row">
+      <div class="field" style="max-width:180px;">
+        <label>Airport ID</label>
+        <input type="text" id="airportId" placeholder="KHEG" maxlength="4" style="text-transform:uppercase;">
+      </div>
+      <button class="btn btn-primary" id="fetchMetarBtn" onclick="fetchMetar()">Fetch METAR</button>
+      <div style="font-size:12px; color:var(--text-dim); align-self:center;">or enter weather manually below</div>
+    </div>
+
+    <div class="subsection-title">Weather</div>
+    <div class="input-grid">
+      <div class="field">
+        <label>OAT</label>
+        <div style="display:flex; gap:8px;">
+          <input type="number" id="oat" placeholder="25" style="flex:1;">
+          <select id="oatUnit" style="width:60px;">
+            <option value="C">&deg;C</option>
+            <option value="F">&deg;F</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Altimeter (inHg)</label>
+        <input type="number" id="altimeter" placeholder="29.92" step="0.01">
+      </div>
+      <div class="field">
+        <label>Wind Direction (&deg;)</label>
+        <input type="number" id="windDir" placeholder="270" min="0" max="360">
+      </div>
+      <div class="field">
+        <label>Wind Speed (kts)</label>
+        <input type="number" id="windSpd" placeholder="8" min="0">
+      </div>
+      <div class="field">
+        <label>Gust (kts)</label>
+        <input type="number" id="windGust" placeholder="" min="0">
+      </div>
+      <div class="field">
+        <label>Ceiling (ft AGL)</label>
+        <input type="number" id="ceiling" placeholder="CLR" min="0">
+      </div>
+      <div class="field">
+        <label>Visibility (SM)</label>
+        <input type="number" id="visibility" placeholder="10" step="0.25" min="0">
+      </div>
+    </div>
+
+    <!-- Flight Rules Indicator -->
+    <div class="flight-rules-bar" id="flightRulesBar">
+      <div class="fr-indicator">
+        <span class="fr-badge vfr" id="frBadge">VFR</span>
+        <span class="fr-detail" id="frDetail">Auto-detected from weather</span>
+      </div>
+      <div class="fr-override">
+        <label>Override:</label>
+        <select class="fr-override-select" id="frOverride" onchange="updateFlightRules()">
+          <option value="auto">Auto</option>
+          <option value="VFR">VFR</option>
+          <option value="MVFR">MVFR</option>
+          <option value="IFR">IFR</option>
+          <option value="LIFR">LIFR</option>
+        </select>
+      </div>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="subsection-title">Airport &amp; Runways</div>
+    <div class="input-grid" style="margin-bottom:12px;">
+      <div class="field">
+        <label>Field Elevation (ft MSL)</label>
+        <input type="number" id="elevation" placeholder="86">
+      </div>
+    </div>
+    <div id="runwayInputs">
+      <div class="runway-input-group" style="margin-bottom:12px;">
+        <div class="runway-input-row" style="display:flex; gap:12px; margin-bottom:4px; align-items:flex-end;">
+          <div class="field" style="flex:1;">
+            <label>Runway</label>
+            <input type="text" class="rwyName" placeholder="7/25" maxlength="10">
+          </div>
+          <div class="field" style="flex:1;">
+            <label>Length (ft)</label>
+            <input type="number" class="rwyLength" placeholder="4000">
+          </div>
+          <div class="field" style="flex:1;">
+            <label>Heading (Rwy 1)</label>
+            <input type="number" class="rwyHdg" placeholder="70" min="0" max="360">
+          </div>
+          <div class="field" style="flex:1;">
+            <label>Surface</label>
+            <select class="rwySurface">
+              <option value="dry_paved">Dry Paved</option>
+              <option value="dry_grass">Dry Grass</option>
+              <option value="wet_grass">Wet Grass</option>
+            </select>
+          </div>
+        </div>
+        <div class="ifr-proc-row">
+          <span style="color:var(--text-dim); font-size:12px; min-width:90px;">IFR Procedures:</span>
+          <input type="checkbox" class="hasIfrDep1" id="ifrDep1_0"><label for="ifrDep1_0">Rwy 1 Departure</label>
+          <input type="checkbox" class="hasIfrApp1" id="ifrApp1_0"><label for="ifrApp1_0">Rwy 1 Approach</label>
+          <span style="color:var(--border); margin:0 4px;">|</span>
+          <input type="checkbox" class="hasIfrDep2" id="ifrDep2_0"><label for="ifrDep2_0">Rwy 2 Departure</label>
+          <input type="checkbox" class="hasIfrApp2" id="ifrApp2_0"><label for="ifrApp2_0">Rwy 2 Approach</label>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-secondary" onclick="addRunway()" style="margin-top:4px; font-size:13px;">+ Add Runway</button>
+
+    <hr class="section-divider">
+
+    <div class="subsection-title">Weight &amp; Configuration</div>
+    <div class="input-grid">
+      <div class="field">
+        <label>Takeoff Weight (lbs)</label>
+        <input type="number" id="toWeight" placeholder="3400" value="3400">
+      </div>
+      <div class="field">
+        <label>Landing Weight (lbs)</label>
+        <input type="number" id="ldWeight" placeholder="3400" value="3400">
+      </div>
+      <div class="field" style="justify-content:flex-end;">
+        <div class="checkbox-row">
+          <input type="checkbox" id="acOn">
+          <label for="acOn" style="text-transform:none; font-size:14px;">A/C ON</label>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-calc" onclick="calculate()">Calculate TOLD</button>
+  </div>
+
+  <!-- Results -->
+  <div class="results" id="results">
+    <div class="warning-banner" id="warningBanner"></div>
+
+    <div class="results-header">
+      <h2 id="resultsTitle">TOLD Card</h2>
+      <div class="conditions-grid" id="conditionsGrid"></div>
+    </div>
+
+    <div class="metar-bar" id="metarBar" style="display:none;"></div>
+
+    <div class="ifr-info-banner" id="ifrInfoBanner"></div>
+
+    <div class="tat-note" id="tatNote">
+      <strong>TAT Note:</strong> Turbonormalized engine maintains ~29.6" MP at altitude. Actual takeoff distances above ~2,000 ft MSL will likely be shorter than these POH-derived values. These numbers are conservative.
+    </div>
+
+    <div id="runwayResults"></div>
+
+    <div class="vspeeds-card" id="vspeedsCard"></div>
+
+    <div class="assumptions" id="assumptionsCard"></div>
+
+    <div class="disclaimer">
+      <strong>ADVISORY ONLY</strong> &mdash; Pilot in Command retains final authority and responsibility.<br>
+      Based on Cirrus SR22 TN POH Section 5 performance tables. All distances assume standard POH conditions unless noted.
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== POH PERFORMANCE TABLES =====
+// Takeoff at 3400 lbs: [pressAlt] => { grRoll: [0C,10C,20C,30C,40C], over50: [0C,10C,20C,30C,40C] }
+const TO_3400 = {
+  0:     { gr: [917,990,1067,1146,1229],    o50: [1432,1539,1650,1764,1883] },
+  1000:  { gr: [1011,1092,1176,1264,1355],   o50: [1574,1691,1813,1939,2069] },
+  2000:  { gr: [1116,1206,1299,1395,1496],   o50: [1732,1861,1995,2133,2276] },
+  3000:  { gr: [1234,1332,1435,1542,1653],   o50: [1907,2049,2196,2349,2507] },
+  4000:  { gr: [1365,1474,1588,1706,1829],   o50: [2102,2259,2422,2590,2764] },
+  5000:  { gr: [1512,1633,1758,1889,2025],   o50: [2320,2493,2673,2858,3051] },
+  6000:  { gr: [1676,1810,1950,2095,2245],   o50: [2564,2755,2953,3159,3371] },
+  7000:  { gr: [1861,2009,2164,2325,2492],   o50: [2837,3048,3267,3494,3729] },
+  8000:  { gr: [2068,2233,2405,2584,2770],   o50: [3142,3376,3619,3871,4131] },
+  9000:  { gr: [2302,2485,2677,2875,3082],   o50: [3485,3744,4014,4293,4581] },
+  10000: { gr: [2564,2769,2982,3204,3434],   o50: [3870,4158,4457,4767,5088] }
+};
+
+// Landing at 3400 lbs
+const LD_3400 = {
+  0:     { gr: [1082,1121,1161,1200,1240], total: [2262,2316,2372,2428,2485] },
+  1000:  { gr: [1122,1163,1204,1245,1286], total: [2317,2374,2433,2492,2551] },
+  2000:  { gr: [1163,1206,1248,1291,1334], total: [2375,2436,2497,2559,2621] },
+  3000:  { gr: [1207,1251,1295,1339,1384], total: [2437,2501,2565,2630,2696] },
+  4000:  { gr: [1252,1298,1344,1390,1436], total: [2503,2569,2637,2705,2774] },
+  5000:  { gr: [1300,1348,1395,1443,1490], total: [2572,2642,2713,2785,2857] },
+  6000:  { gr: [1350,1399,1449,1498,1547], total: [2645,2719,2794,2869,2945] },
+  7000:  { gr: [1402,1453,1504,1556,1607], total: [2723,2800,2879,2958,3038] },
+  8000:  { gr: [1456,1509,1563,1616,1669], total: [2805,2887,2969,3052,3136] },
+  9000:  { gr: [1513,1569,1624,1679,1735], total: [2892,2978,3064,3152,3240] },
+  10000: { gr: [1573,1630,1688,1746,1803], total: [2984,3074,3165,3257,3350] }
+};
+
+const ALTS = [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000];
+const TEMPS = [0,10,20,30,40];
+
+let metarRaw = '';
+let rwyCounter = 1;
+
+// ===== FLIGHT RULES DETECTION =====
+function detectFlightRules() {
+  const ceiling = parseFloat(document.getElementById('ceiling').value);
+  const vis = parseFloat(document.getElementById('visibility').value);
+
+  // Default if no ceiling/vis entered
+  if (isNaN(ceiling) && isNaN(vis)) return 'VFR';
+
+  const c = isNaN(ceiling) ? 99999 : ceiling;
+  const v = isNaN(vis) ? 99 : vis;
+
+  if (c < 200 || v < 0.5) return 'LIFR';
+  if (c < 500 || v < 1) return 'LIFR';
+  if (c < 1000 || v < 3) return 'IFR';
+  if (c <= 3000 || v <= 5) return 'MVFR';
+  return 'VFR';
+}
+
+function getEffectiveFlightRules() {
+  const override = document.getElementById('frOverride').value;
+  if (override !== 'auto') return override;
+  return detectFlightRules();
+}
+
+function isIfrConditions() {
+  const fr = getEffectiveFlightRules();
+  return fr === 'IFR' || fr === 'LIFR';
+}
+
+function updateFlightRules() {
+  const override = document.getElementById('frOverride').value;
+  const detected = detectFlightRules();
+  const effective = override !== 'auto' ? override : detected;
+
+  const badge = document.getElementById('frBadge');
+  badge.textContent = effective;
+  badge.className = 'fr-badge ' + effective.toLowerCase();
+
+  const detail = document.getElementById('frDetail');
+  if (override !== 'auto') {
+    detail.textContent = `Manual override (auto-detected: ${detected})`;
+  } else {
+    const c = document.getElementById('ceiling').value;
+    const v = document.getElementById('visibility').value;
+    const parts = [];
+    if (c) parts.push(`Ceiling ${c} ft AGL`);
+    if (v) parts.push(`Vis ${v} SM`);
+    detail.textContent = parts.length ? parts.join(' / ') : 'Enter ceiling/visibility for auto-detect';
+  }
+}
+
+// Update flight rules when ceiling/vis change
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('ceiling').addEventListener('input', updateFlightRules);
+  document.getElementById('visibility').addEventListener('input', updateFlightRules);
+  document.getElementById('airportId').value = 'KHEG';
+});
+
+function addRunway() {
+  const container = document.getElementById('runwayInputs');
+  const idx = rwyCounter++;
+  const group = document.createElement('div');
+  group.className = 'runway-input-group';
+  group.style.cssText = 'margin-bottom:12px;';
+  group.innerHTML = `
+    <div class="runway-input-row" style="display:flex; gap:12px; margin-bottom:4px; align-items:flex-end;">
+      <div class="field" style="flex:1;"><label>Runway</label><input type="text" class="rwyName" placeholder="11/29" maxlength="10"></div>
+      <div class="field" style="flex:1;"><label>Length (ft)</label><input type="number" class="rwyLength" placeholder="3500"></div>
+      <div class="field" style="flex:1;"><label>Heading (Rwy 1)</label><input type="number" class="rwyHdg" placeholder="110" min="0" max="360"></div>
+      <div class="field" style="flex:1;"><label>Surface</label><select class="rwySurface"><option value="dry_paved">Dry Paved</option><option value="dry_grass">Dry Grass</option><option value="wet_grass">Wet Grass</option></select></div>
+      <button class="btn btn-secondary" onclick="this.closest('.runway-input-group').remove()" style="font-size:12px; padding:8px 12px; margin-bottom:2px;">&times;</button>
+    </div>
+    <div class="ifr-proc-row">
+      <span style="color:var(--text-dim); font-size:12px; min-width:90px;">IFR Procedures:</span>
+      <input type="checkbox" class="hasIfrDep1" id="ifrDep1_${idx}"><label for="ifrDep1_${idx}">Rwy 1 Departure</label>
+      <input type="checkbox" class="hasIfrApp1" id="ifrApp1_${idx}"><label for="ifrApp1_${idx}">Rwy 1 Approach</label>
+      <span style="color:var(--border); margin:0 4px;">|</span>
+      <input type="checkbox" class="hasIfrDep2" id="ifrDep2_${idx}"><label for="ifrDep2_${idx}">Rwy 2 Departure</label>
+      <input type="checkbox" class="hasIfrApp2" id="ifrApp2_${idx}"><label for="ifrApp2_${idx}">Rwy 2 Approach</label>
+    </div>
+  `;
+  container.appendChild(group);
+}
+
+async function fetchMetar() {
+  const id = document.getElementById('airportId').value.trim().toUpperCase();
+  if (!id) return;
+  const btn = document.getElementById('fetchMetarBtn');
+  btn.disabled = true; btn.textContent = 'Fetching...';
+
+  try {
+    // Try ICAO format
+    const icao = id.length === 3 ? 'K' + id : id;
+    const resp = await fetch(`https://metar.vatsim.net/metar.php?id=${icao}`);
+    const text = await resp.text();
+
+    if (text && text.includes(icao)) {
+      metarRaw = text.trim();
+      parseMetar(metarRaw);
+      btn.textContent = 'Fetched!';
+      setTimeout(() => { btn.disabled = false; btn.textContent = 'Fetch METAR'; }, 2000);
+    } else {
+      throw new Error('No METAR');
+    }
+  } catch (e) {
+    btn.textContent = 'Not found';
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'Fetch METAR'; }, 2000);
+  }
+}
+
+function parseMetar(raw) {
+  // Wind: dddssKT or dddssGggKT or VRB
+  const windMatch = raw.match(/\b(\d{3}|VRB)(\d{2,3})(G(\d{2,3}))?KT\b/);
+  if (windMatch) {
+    const dir = windMatch[1] === 'VRB' ? 0 : parseInt(windMatch[1]);
+    document.getElementById('windDir').value = dir;
+    document.getElementById('windSpd').value = parseInt(windMatch[2]);
+    if (windMatch[4]) document.getElementById('windGust').value = parseInt(windMatch[4]);
+  }
+
+  // Altimeter: Adddd
+  const altMatch = raw.match(/\bA(\d{4})\b/);
+  if (altMatch) {
+    document.getElementById('altimeter').value = (parseInt(altMatch[1]) / 100).toFixed(2);
+  }
+
+  // Temperature: TT/DD (may have M prefix for negative)
+  const tempMatch = raw.match(/\b(M?\d{2})\/(M?\d{2})\b/);
+  if (tempMatch) {
+    let temp = parseInt(tempMatch[1].replace('M', '-'));
+    document.getElementById('oat').value = temp;
+    document.getElementById('oatUnit').value = 'C';
+  }
+
+  // Visibility: ddSM or d/dSM or ddddSM (in whole/fraction SM)
+  const visMatch = raw.match(/\b(\d+)\s*(?:(\d+)\/(\d+))?\s*SM\b/);
+  if (visMatch) {
+    let vis = parseInt(visMatch[1]);
+    if (visMatch[2] && visMatch[3]) {
+      vis += parseInt(visMatch[2]) / parseInt(visMatch[3]);
+    }
+    document.getElementById('visibility').value = vis;
+  }
+
+  // Ceiling: BKN or OVC layers — lowest BKN/OVC is the ceiling
+  const cloudRegex = /(BKN|OVC)(\d{3})/g;
+  let lowestCeiling = 99999;
+  let match;
+  while ((match = cloudRegex.exec(raw)) !== null) {
+    const hgt = parseInt(match[2]) * 100;
+    if (hgt < lowestCeiling) lowestCeiling = hgt;
+  }
+  if (lowestCeiling < 99999) {
+    document.getElementById('ceiling').value = lowestCeiling;
+  } else {
+    document.getElementById('ceiling').value = '';
+  }
+
+  updateFlightRules();
+
+  // Try to fill known airport data
+  const icao = raw.substring(0, 4);
+  fillAirportData(icao);
+}
+
+function fillAirportData(icao) {
+  // Known airports with IFR procedure data
+  // ifrDep1/ifrApp1 = first runway direction, ifrDep2/ifrApp2 = reciprocal
+  const airports = {
+    'KHEG': { elev: 86, runways: [
+      { name: '7/25', length: 4000, hdg: 70, surface: 'dry_paved',
+        ifrDep1: true, ifrApp1: true,   // Rwy 7: RNAV departure, RNAV-7 approach
+        ifrDep2: true, ifrApp2: true },  // Rwy 25: RNAV departure, RNAV-25 approach
+      { name: '11/29', length: 3500, hdg: 110, surface: 'dry_paved',
+        ifrDep1: false, ifrApp1: false,  // Rwy 11: no published IFR
+        ifrDep2: false, ifrApp2: false }  // Rwy 29: no published IFR
+    ]}
+  };
+
+  if (airports[icao]) {
+    const ap = airports[icao];
+    document.getElementById('elevation').value = ap.elev;
+    // Clear and set runways
+    const container = document.getElementById('runwayInputs');
+    container.innerHTML = '';
+
+    ap.runways.forEach((rwy, i) => {
+      const idx = i === 0 ? 0 : rwyCounter++;
+      const group = document.createElement('div');
+      group.className = 'runway-input-group';
+      group.style.cssText = 'margin-bottom:12px;';
+      group.innerHTML = `
+        <div class="runway-input-row" style="display:flex; gap:12px; margin-bottom:4px; align-items:flex-end;">
+          <div class="field" style="flex:1;"><label>Runway</label><input type="text" class="rwyName" value="${rwy.name}" maxlength="10"></div>
+          <div class="field" style="flex:1;"><label>Length (ft)</label><input type="number" class="rwyLength" value="${rwy.length}"></div>
+          <div class="field" style="flex:1;"><label>Heading (Rwy 1)</label><input type="number" class="rwyHdg" value="${rwy.hdg}" min="0" max="360"></div>
+          <div class="field" style="flex:1;"><label>Surface</label><select class="rwySurface"><option value="dry_paved" ${rwy.surface==='dry_paved'?'selected':''}>Dry Paved</option><option value="dry_grass" ${rwy.surface==='dry_grass'?'selected':''}>Dry Grass</option><option value="wet_grass" ${rwy.surface==='wet_grass'?'selected':''}>Wet Grass</option></select></div>
+        </div>
+        <div class="ifr-proc-row">
+          <span style="color:var(--text-dim); font-size:12px; min-width:90px;">IFR Procedures:</span>
+          <input type="checkbox" class="hasIfrDep1" id="ifrDep1_${idx}" ${rwy.ifrDep1?'checked':''}><label for="ifrDep1_${idx}">Rwy 1 Departure</label>
+          <input type="checkbox" class="hasIfrApp1" id="ifrApp1_${idx}" ${rwy.ifrApp1?'checked':''}><label for="ifrApp1_${idx}">Rwy 1 Approach</label>
+          <span style="color:var(--border); margin:0 4px;">|</span>
+          <input type="checkbox" class="hasIfrDep2" id="ifrDep2_${idx}" ${rwy.ifrDep2?'checked':''}><label for="ifrDep2_${idx}">Rwy 2 Departure</label>
+          <input type="checkbox" class="hasIfrApp2" id="ifrApp2_${idx}" ${rwy.ifrApp2?'checked':''}><label for="ifrApp2_${idx}">Rwy 2 Approach</label>
+        </div>
+      `;
+      container.appendChild(group);
+    });
+  }
+}
+
+// ===== INTERPOLATION ENGINE =====
+function interpTemp(arr, tempC) {
+  const t = Math.max(0, Math.min(40, tempC));
+  const idx = Math.floor(t / 10);
+  if (idx >= 4) return arr[4];
+  const frac = (t - TEMPS[idx]) / 10;
+  return arr[idx] + frac * (arr[idx + 1] - arr[idx]);
+}
+
+function interpAlt(table, field, pressAlt, tempC) {
+  const pa = Math.max(0, Math.min(10000, pressAlt));
+  const idx = Math.floor(pa / 1000);
+  if (idx >= 10) return interpTemp(table[10000][field], tempC);
+
+  const altLow = ALTS[idx];
+  const altHigh = ALTS[idx + 1];
+  const valLow = interpTemp(table[altLow][field], tempC);
+  const valHigh = interpTemp(table[altHigh][field], tempC);
+  const frac = (pa - altLow) / 1000;
+  return valLow + frac * (valHigh - valLow);
+}
+
+// ===== MAIN CALCULATION =====
+function calculate() {
+  // Gather inputs
+  let oat = parseFloat(document.getElementById('oat').value);
+  const oatUnit = document.getElementById('oatUnit').value;
+  const altimeter = parseFloat(document.getElementById('altimeter').value);
+  const windDir = parseFloat(document.getElementById('windDir').value) || 0;
+  const windSpd = parseFloat(document.getElementById('windSpd').value) || 0;
+  const windGust = parseFloat(document.getElementById('windGust').value) || 0;
+  const elevation = parseFloat(document.getElementById('elevation').value);
+  const toWeight = parseFloat(document.getElementById('toWeight').value) || 3400;
+  const ldWeight = parseFloat(document.getElementById('ldWeight').value) || 3400;
+  const acOn = document.getElementById('acOn').checked;
+
+  if (isNaN(oat) || isNaN(altimeter) || isNaN(elevation)) {
+    alert('Please fill in OAT, Altimeter, and Field Elevation.');
+    return;
+  }
+
+  // Convert F to C
+  if (oatUnit === 'F') oat = (oat - 32) * 5 / 9;
+
+  // Pressure altitude
+  const pressAlt = (29.92 - altimeter) * 1000 + elevation;
+
+  // ISA temp at pressure altitude
+  const isaTemp = 15 - 2 * (pressAlt / 1000);
+  const densAlt = pressAlt + 120 * (oat - isaTemp);
+
+  // Determine flight rules
+  const ifrActive = isIfrConditions();
+  updateFlightRules();
+
+  // Parse runways with IFR procedure data
+  const groups = document.querySelectorAll('.runway-input-group');
+  const runways = [];
+  groups.forEach(group => {
+    const row = group.querySelector('.runway-input-row');
+    const name = row.querySelector('.rwyName').value.trim();
+    const length = parseFloat(row.querySelector('.rwyLength').value);
+    const hdg = parseFloat(row.querySelector('.rwyHdg').value);
+    const surface = row.querySelector('.rwySurface').value;
+
+    const hasIfrDep1 = group.querySelector('.hasIfrDep1')?.checked || false;
+    const hasIfrApp1 = group.querySelector('.hasIfrApp1')?.checked || false;
+    const hasIfrDep2 = group.querySelector('.hasIfrDep2')?.checked || false;
+    const hasIfrApp2 = group.querySelector('.hasIfrApp2')?.checked || false;
+
+    if (name && length && !isNaN(hdg)) {
+      const parts = name.split('/');
+      runways.push({
+        name: parts[0], length, hdg, surface, fullName: name,
+        hasIfrDep: hasIfrDep1, hasIfrApp: hasIfrApp1
+      });
+      if (parts.length === 2) {
+        const recipHdg = (hdg + 180) % 360;
+        runways.push({
+          name: parts[1], length, hdg: recipHdg, surface, fullName: name,
+          hasIfrDep: hasIfrDep2, hasIfrApp: hasIfrApp2
+        });
+      }
+    }
+  });
+
+  if (runways.length === 0) {
+    alert('Please add at least one runway.');
+    return;
+  }
+
+  // Weight factor for scaling (simplified linear between 2900 and 3400)
+  const toWF = toWeight / 3400;
+  const ldWF = ldWeight / 3400;
+
+  // Compute for each runway direction
+  let warnings = [];
+  let bestTORwy = null;
+  let bestLDRwy = null;
+  let bestTOHeadwind = -999;
+  let bestLDHeadwind = -999;
+
+  // First pass: compute wind for all runways to find best IFR-eligible ones
+  const windData = runways.map(rwy => {
+    const angle = Math.abs(windDir - rwy.hdg) * Math.PI / 180;
+    const headwind = windSpd * Math.cos(angle);
+    const crosswind = Math.abs(windSpd * Math.sin(angle));
+    return { headwind, crosswind };
+  });
+
+  // Select best runway for takeoff and landing considering IFR
+  runways.forEach((rwy, i) => {
+    const hw = windData[i].headwind;
+    const toEligible = !ifrActive || rwy.hasIfrDep;
+    const ldEligible = !ifrActive || rwy.hasIfrApp;
+
+    if (toEligible && hw > bestTOHeadwind) {
+      bestTOHeadwind = hw;
+      bestTORwy = rwy.name;
+    }
+    if (ldEligible && hw > bestLDHeadwind) {
+      bestLDHeadwind = hw;
+      bestLDRwy = rwy.name;
+    }
+  });
+
+  // If IFR and no eligible runways found, warn
+  if (ifrActive && !bestTORwy) {
+    warnings.push('IFR CONDITIONS: No runway has a published IFR departure procedure');
+  }
+  if (ifrActive && !bestLDRwy) {
+    warnings.push('IFR CONDITIONS: No runway has a published instrument approach');
+  }
+
+  const results = runways.map((rwy, rwyIdx) => {
+    // Wind components
+    const angle = Math.abs(windDir - rwy.hdg) * Math.PI / 180;
+    let headwind = windSpd * Math.cos(angle);
+    const crosswind = Math.abs(windSpd * Math.sin(angle));
+    const gustXwind = windGust > 0 ? Math.abs(windGust * Math.sin(angle)) : crosswind;
+
+    // Use gust for tailwind calculation if applicable
+    const gustHeadwind = windGust > 0 ? windGust * Math.cos(angle) : headwind;
+    const effectiveHeadwind = headwind >= 0 ? headwind : Math.min(headwind, gustHeadwind);
+
+    // Base takeoff distances (3400 lbs table)
+    let toGR = interpAlt(TO_3400, 'gr', pressAlt, oat);
+    let toO50 = interpAlt(TO_3400, 'o50', pressAlt, oat);
+
+    // Weight scaling (approximate: square relationship)
+    const toWFsq = toWF * toWF;
+    toGR *= toWFsq;
+    toO50 *= toWFsq;
+
+    // Surface correction (ground roll only)
+    let surfaceFactor = 1.0;
+    if (rwy.surface === 'dry_grass') surfaceFactor = 1.20;
+    else if (rwy.surface === 'wet_grass') surfaceFactor = 1.30;
+
+    const toGRsurf = toGR * surfaceFactor;
+    const toO50surf = toO50; // Over-50 not corrected for surface per POH
+
+    // A/C correction
+    const acGR = acOn ? 100 : 0;
+    const acO50 = acOn ? 150 : 0;
+
+    const toGRbase = toGRsurf + acGR;
+    const toO50base = toO50surf + acO50;
+
+    // Wind correction for takeoff
+    let toWindFactor = 1.0;
+    if (headwind >= 0) {
+      toWindFactor = 1 - (headwind / 12 * 0.10);
+    } else {
+      const tailwind = Math.abs(headwind);
+      toWindFactor = 1 + (Math.min(tailwind, 10) / 2 * 0.10);
+    }
+
+    const toGRfinal = Math.round(toGRbase * toWindFactor);
+    const toO50final = Math.round(toO50base * toWindFactor);
+
+    // Base landing distances (3400 lbs table)
+    let ldGR = interpAlt(LD_3400, 'gr', pressAlt, oat);
+    let ldTotal = interpAlt(LD_3400, 'total', pressAlt, oat);
+
+    // Weight scaling
+    const ldWFsq = ldWF * ldWF;
+    ldGR *= ldWFsq;
+    ldTotal *= ldWFsq;
+
+    // Surface correction for landing ground roll
+    let ldSurfFactor = 1.0;
+    if (rwy.surface === 'dry_grass') ldSurfFactor = 1.20;
+    else if (rwy.surface === 'wet_grass') ldSurfFactor = 1.60;
+
+    const ldGRsurf = ldGR * ldSurfFactor;
+
+    // Wind correction for landing
+    let ldWindFactor = 1.0;
+    if (headwind >= 0) {
+      ldWindFactor = 1 - (headwind / 13 * 0.10);
+    } else {
+      const tailwind = Math.abs(headwind);
+      ldWindFactor = 1 + (Math.min(tailwind, 10) / 2 * 0.10);
+    }
+
+    const ldGRfinal = Math.round(ldGRsurf * ldWindFactor);
+    const ldTotalFinal = Math.round(ldTotal * ldWindFactor);
+
+    // Margins
+    const toGRmargin = rwy.length - toGRfinal;
+    const toO50margin = rwy.length - toO50final;
+    const ldGRmargin = rwy.length - ldGRfinal;
+    const ldTotalMargin = rwy.length - ldTotalFinal;
+
+    // Warnings
+    if (toO50final > rwy.length) warnings.push(`RWY ${rwy.name}: Takeoff over-50' distance (${toO50final} ft) EXCEEDS runway (${rwy.length} ft)`);
+    if (ldTotalFinal > rwy.length) warnings.push(`RWY ${rwy.name}: Landing total distance (${ldTotalFinal} ft) EXCEEDS runway (${rwy.length} ft)`);
+    if (crosswind > 15) warnings.push(`RWY ${rwy.name}: Crosswind ${Math.round(crosswind)} kts exceeds 15 kts advisory`);
+
+    // IFR eligibility
+    const ifrTOeligible = !ifrActive || rwy.hasIfrDep;
+    const ifrLDeligible = !ifrActive || rwy.hasIfrApp;
+
+    return {
+      rwy,
+      headwind: Math.round(headwind),
+      crosswind: Math.round(crosswind),
+      gustXwind: Math.round(gustXwind),
+      toGR: Math.round(toGRbase),
+      toO50: Math.round(toO50base),
+      toGRfinal,
+      toO50final,
+      ldGR: Math.round(ldGRsurf),
+      ldTotal: Math.round(ldTotal),
+      ldGRfinal,
+      ldTotalFinal,
+      toGRmargin,
+      toO50margin,
+      ldGRmargin,
+      ldTotalMargin,
+      ifrTOeligible,
+      ifrLDeligible,
+      isRecommendedTO: rwy.name === bestTORwy,
+      isRecommendedLD: rwy.name === bestLDRwy
+    };
+  });
+
+  // Sort: recommended TO runway first, then by headwind
+  results.sort((a, b) => {
+    if (a.isRecommendedTO) return -1;
+    if (b.isRecommendedTO) return 1;
+    if (a.isRecommendedLD && !b.isRecommendedTO) return -1;
+    if (b.isRecommendedLD && !a.isRecommendedTO) return 1;
+    // IFR eligible before ineligible
+    const aElig = a.ifrTOeligible || a.ifrLDeligible;
+    const bElig = b.ifrTOeligible || b.ifrLDeligible;
+    if (aElig && !bElig) return -1;
+    if (!aElig && bElig) return 1;
+    return b.headwind - a.headwind;
+  });
+
+  renderResults(results, {
+    pressAlt: Math.round(pressAlt),
+    densAlt: Math.round(densAlt),
+    oat: Math.round(oat),
+    altimeter,
+    windDir,
+    windSpd,
+    windGust,
+    elevation,
+    toWeight,
+    ldWeight,
+    acOn,
+    ifrActive,
+    flightRules: getEffectiveFlightRules(),
+    bestTORwy,
+    bestLDRwy,
+    warnings
+  });
+}
+
+function renderResults(results, ctx) {
+  document.getElementById('results').classList.add('visible');
+
+  // Title
+  const airportId = document.getElementById('airportId').value.trim().toUpperCase();
+  const now = new Date();
+  document.getElementById('resultsTitle').textContent =
+    `TOLD Card ${airportId ? '- ' + airportId : ''} - ${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
+
+  // Flight rules badge for results
+  const frClass = ctx.flightRules.toLowerCase();
+
+  // Conditions
+  document.getElementById('conditionsGrid').innerHTML = `
+    <div class="cond-item"><div class="label">Flight Rules</div><div class="value"><span class="fr-badge ${frClass}" style="font-size:14px; padding:3px 10px;">${ctx.flightRules}</span></div></div>
+    <div class="cond-item"><div class="label">Pressure Alt</div><div class="value">${ctx.pressAlt.toLocaleString()} ft</div></div>
+    <div class="cond-item"><div class="label">Density Alt</div><div class="value">${ctx.densAlt.toLocaleString()} ft</div></div>
+    <div class="cond-item"><div class="label">OAT</div><div class="value">${ctx.oat}&deg;C / ${Math.round(ctx.oat*9/5+32)}&deg;F</div></div>
+    <div class="cond-item"><div class="label">Altimeter</div><div class="value">${ctx.altimeter.toFixed(2)}"</div></div>
+    <div class="cond-item"><div class="label">Wind</div><div class="value">${String(ctx.windDir).padStart(3,'0')}&deg;/${ctx.windSpd}kt${ctx.windGust?'G'+ctx.windGust:''}</div></div>
+    <div class="cond-item"><div class="label">TO Weight</div><div class="value">${ctx.toWeight.toLocaleString()} lbs</div></div>
+  `;
+
+  // IFR info banner
+  const ifrBanner = document.getElementById('ifrInfoBanner');
+  if (ctx.ifrActive) {
+    const toName = ctx.bestTORwy || 'NONE';
+    const ldName = ctx.bestLDRwy || 'NONE';
+    let bannerHtml = `<strong>${ctx.flightRules} CONDITIONS</strong> &mdash; Runway selection restricted to published IFR procedures.`;
+    if (ctx.bestTORwy && ctx.bestTORwy === ctx.bestLDRwy) {
+      bannerHtml += ` Best runway: <strong>RWY ${toName}</strong> (departure + approach).`;
+    } else {
+      bannerHtml += ` Best departure: <strong>RWY ${toName}</strong>. Best approach: <strong>RWY ${ldName}</strong>.`;
+    }
+    ifrBanner.innerHTML = bannerHtml;
+    ifrBanner.classList.add('visible');
+  } else {
+    ifrBanner.classList.remove('visible');
+  }
+
+  // METAR
+  if (metarRaw) {
+    document.getElementById('metarBar').style.display = 'block';
+    document.getElementById('metarBar').innerHTML = `<strong>METAR:</strong> ${metarRaw}`;
+  } else {
+    document.getElementById('metarBar').style.display = 'none';
+  }
+
+  // TAT note
+  const tatNote = document.getElementById('tatNote');
+  tatNote.classList.toggle('visible', ctx.pressAlt > 2000);
+
+  // Warnings
+  const wb = document.getElementById('warningBanner');
+  if (ctx.warnings.length > 0) {
+    wb.classList.add('visible');
+    wb.innerHTML = ctx.warnings.join('<br>');
+  } else {
+    wb.classList.remove('visible');
+  }
+
+  // Runway cards
+  const container = document.getElementById('runwayResults');
+  container.innerHTML = '';
+
+  results.forEach(r => {
+    const isRecTO = r.isRecommendedTO;
+    const isRecLD = r.isRecommendedLD;
+    const isRec = isRecTO || isRecLD;
+    const ifrExcluded = ctx.ifrActive && !r.ifrTOeligible && !r.ifrLDeligible;
+
+    const card = document.createElement('div');
+    card.className = `runway-card ${isRec && !ifrExcluded ? 'recommended' : ''} ${ifrExcluded ? 'ifr-excluded' : ''}`;
+
+    const windBadge = r.headwind >= 0
+      ? `<span class="rwy-badge badge-headwind">${r.headwind} kt headwind</span>`
+      : `<span class="rwy-badge badge-tailwind">${Math.abs(r.headwind)} kt tailwind</span>`;
+
+    const xwarnHtml = r.crosswind > 15
+      ? `<span class="xwind-warning">XWIND ${r.crosswind} KT EXCEEDS 15 KT</span>`
+      : '';
+
+    // IFR procedure badges
+    let ifrBadges = '';
+    if (ctx.ifrActive) {
+      if (r.ifrTOeligible && r.ifrLDeligible) {
+        ifrBadges = '<span class="rwy-badge" style="background:rgba(59,130,246,0.15); color:var(--accent-light); font-size:11px;">IFR DEP + APP</span>';
+      } else if (r.ifrTOeligible) {
+        ifrBadges = '<span class="rwy-badge" style="background:rgba(59,130,246,0.15); color:var(--accent-light); font-size:11px;">IFR DEP ONLY</span>';
+      } else if (r.ifrLDeligible) {
+        ifrBadges = '<span class="rwy-badge" style="background:rgba(59,130,246,0.15); color:var(--accent-light); font-size:11px;">IFR APP ONLY</span>';
+      } else {
+        ifrBadges = '<span class="rwy-badge badge-no-proc" style="font-size:11px;">NO IFR PROC</span>';
+      }
+    }
+
+    // Recommended badge text
+    let recBadge = '';
+    if (!ifrExcluded) {
+      if (isRecTO && isRecLD) {
+        recBadge = '<span class="rwy-badge badge-recommended">Recommended</span>';
+      } else if (isRecTO) {
+        recBadge = '<span class="rwy-badge badge-recommended">Best Takeoff</span>';
+      } else if (isRecLD) {
+        recBadge = '<span class="rwy-badge badge-recommended">Best Landing</span>';
+      }
+    }
+
+    function marginColor(margin, total) {
+      const pct = margin / total;
+      if (pct < 0) return 'var(--red)';
+      if (pct < 0.3) return 'var(--yellow)';
+      return 'var(--green)';
+    }
+
+    function marginBar(margin, rwyLen, label) {
+      const pct = Math.max(0, Math.min(100, (1 - margin / rwyLen) * 100));
+      const remainPct = Math.round(margin / rwyLen * 100);
+      const color = marginColor(margin, rwyLen);
+      return `
+        <div class="margin-bar"><div class="margin-fill" style="width:${pct}%; background:${color};"></div></div>
+        <div class="margin-text">
+          <span>${margin > 0 ? '+' : ''}${margin.toLocaleString()} ft remaining</span>
+          <span style="color:${color}; font-weight:600;">${remainPct}% margin</span>
+        </div>
+      `;
+    }
+
+    card.innerHTML = `
+      <div class="runway-card-header">
+        <div>
+          <span class="rwy-name">RWY ${r.rwy.name}</span>
+          <span class="rwy-info" style="margin-left:12px;">${r.rwy.length.toLocaleString()} ft &middot; ${r.rwy.surface.replace('_',' ')}</span>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          ${xwarnHtml}
+          ${ifrBadges}
+          ${windBadge}
+          ${recBadge}
+        </div>
+      </div>
+      <div class="wind-strip">
+        <span>Headwind: <strong>${r.headwind >= 0 ? r.headwind : 0} kt</strong></span>
+        <span>Tailwind: <strong>${r.headwind < 0 ? Math.abs(r.headwind) : 0} kt</strong></span>
+        <span>Crosswind: <strong>${r.crosswind} kt</strong></span>
+      </div>
+      <div class="perf-grid">
+        <div class="perf-section">
+          <h4>Takeoff</h4>
+          <div class="perf-row"><span class="perf-label">Ground Roll (no wind)</span><span class="perf-value">${r.toGR.toLocaleString()} ft</span></div>
+          <div class="perf-row"><span class="perf-label">Ground Roll (corrected)</span><span class="perf-value" style="color:${marginColor(r.toGRmargin, r.rwy.length)}">${r.toGRfinal.toLocaleString()} ft</span></div>
+          ${marginBar(r.toGRmargin, r.rwy.length)}
+          <div style="height:12px;"></div>
+          <div class="perf-row"><span class="perf-label">Over 50' (no wind)</span><span class="perf-value">${r.toO50.toLocaleString()} ft</span></div>
+          <div class="perf-row"><span class="perf-label">Over 50' (corrected)</span><span class="perf-value" style="color:${marginColor(r.toO50margin, r.rwy.length)}">${r.toO50final.toLocaleString()} ft</span></div>
+          ${marginBar(r.toO50margin, r.rwy.length)}
+        </div>
+        <div class="perf-section">
+          <h4>Landing</h4>
+          <div class="perf-row"><span class="perf-label">Ground Roll (no wind)</span><span class="perf-value">${r.ldGR.toLocaleString()} ft</span></div>
+          <div class="perf-row"><span class="perf-label">Ground Roll (corrected)</span><span class="perf-value" style="color:${marginColor(r.ldGRmargin, r.rwy.length)}">${r.ldGRfinal.toLocaleString()} ft</span></div>
+          ${marginBar(r.ldGRmargin, r.rwy.length)}
+          <div style="height:12px;"></div>
+          <div class="perf-row"><span class="perf-label">Total over 50' (no wind)</span><span class="perf-value">${r.ldTotal.toLocaleString()} ft</span></div>
+          <div class="perf-row"><span class="perf-label">Total over 50' (corrected)</span><span class="perf-value" style="color:${marginColor(r.ldTotalMargin, r.rwy.length)}">${r.ldTotalFinal.toLocaleString()} ft</span></div>
+          ${marginBar(r.ldTotalMargin, r.rwy.length)}
+        </div>
+      </div>
+      ${ifrExcluded ? '<div class="ifr-excluded-label">No published IFR procedure — excluded under ' + ctx.flightRules + ' conditions</div>' : ''}
+    `;
+    container.appendChild(card);
+  });
+
+  // V-speeds
+  const vspeedsCard = document.getElementById('vspeedsCard');
+  const w = ctx.toWeight;
+  const vr = w >= 3400 ? 73 : 70;
+  const vo50 = w >= 3400 ? 78 : 74;
+  vspeedsCard.innerHTML = `
+    <h3>Reference Speeds</h3>
+    <div class="vspeeds-grid">
+      <div class="vspeed-item"><div class="label">Vr (Rotation)</div><div class="speed">${vr}</div><div class="unit">KIAS</div></div>
+      <div class="vspeed-item"><div class="label">Over 50' (TO)</div><div class="speed">${vo50}</div><div class="unit">KIAS</div></div>
+      <div class="vspeed-item"><div class="label">Vy (Best ROC)</div><div class="speed">${ctx.pressAlt > 5000 ? '98' : '101'}</div><div class="unit">KIAS</div></div>
+      <div class="vspeed-item"><div class="label">Vx (Best AOC)</div><div class="speed">${ctx.pressAlt > 5000 ? '80' : '78'}</div><div class="unit">KIAS</div></div>
+      <div class="vspeed-item"><div class="label">Vref (Landing)</div><div class="speed">77</div><div class="unit">KIAS</div></div>
+      <div class="vspeed-item"><div class="label">Approach 100%</div><div class="speed">80-85</div><div class="unit">KIAS</div></div>
+      <div class="vspeed-item"><div class="label">Vs (Stall)</div><div class="speed">59</div><div class="unit">KIAS</div></div>
+    </div>
+  `;
+
+  // Assumptions
+  document.getElementById('assumptionsCard').innerHTML = `
+    <h3>Assumptions</h3>
+    <ul>
+      <li>TO Weight: ${ctx.toWeight} lbs</li>
+      <li>LD Weight: ${ctx.ldWeight} lbs</li>
+      <li>TO Flaps: 50%</li>
+      <li>LD Flaps: 100%</li>
+      <li>A/C: ${ctx.acOn ? 'ON (+100/+150 ft)' : 'OFF'}</li>
+      <li>Flight Rules: ${ctx.flightRules}${ctx.ifrActive ? ' (IFR filtering active)' : ''}</li>
+      <li>POH Section 5 Tables</li>
+      <li>Advisory Only</li>
+    </ul>
+  `;
+
+  // Scroll to results
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Pre-fill handled in the DOMContentLoaded listener above
+
+// Register service worker for offline PWA support
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
