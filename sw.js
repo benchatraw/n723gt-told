@@ -1,4 +1,4 @@
-const CACHE_NAME = 'n723gt-told-v1';
+const CACHE_NAME = 'n723gt-told-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -6,7 +6,7 @@ const ASSETS = [
   './icon.svg'
 ];
 
-// Install: cache all assets
+// Install: cache all assets, activate immediately
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
@@ -14,7 +14,7 @@ self.addEventListener('install', event => {
   self.skipWaiting();
 });
 
-// Activate: clean old caches
+// Activate: clean old caches, take control immediately
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -24,27 +24,20 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch: cache-first for app assets, network-first for METAR API
+// Fetch: network-first for app assets (so updates deploy immediately),
+// cache fallback for offline use. Always network-first for external APIs.
 self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-
-  // Network-first for METAR fetches (always want fresh weather)
-  if (url.hostname !== self.location.hostname) {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
-    );
-    return;
-  }
-
-  // Cache-first for app assets
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
+    fetch(event.request)
+      .then(response => {
+        // Update cache with fresh response
         const clone = response.clone();
         caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         return response;
-      });
-    })
+      })
+      .catch(() => {
+        // Offline: serve from cache
+        return caches.match(event.request);
+      })
   );
 });
