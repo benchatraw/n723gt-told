@@ -1521,11 +1521,12 @@ async function fillAirportData(icao) {
     return;
   }
 
-  // Try fetching from aviationweather.gov API
+  // Try fetching from aviationweather.gov API (via CORS proxy)
+  const corsProxy = 'https://api.allorigins.win/raw?url=';
   try {
     const [airportResp, chartsResp] = await Promise.all([
-      fetch(`https://aviationweather.gov/api/data/airport?ids=${icao}&format=json`),
-      fetch(`https://api.aviationapi.com/v1/charts?apt=${icao}&group=7`).catch(() => null)
+      fetch(corsProxy + encodeURIComponent(`https://aviationweather.gov/api/data/airport?ids=${icao}&format=json`)),
+      fetch(corsProxy + encodeURIComponent(`https://api.aviationapi.com/v1/charts?apt=${icao}&group=7`)).catch(() => null)
     ]);
 
     const airportData = await airportResp.json();
@@ -1569,7 +1570,7 @@ async function fillAirportData(icao) {
 
     // Also check for takeoff minimums (group=3) to confirm IFR departures
     try {
-      const toResp = await fetch(`https://api.aviationapi.com/v1/charts?apt=${icao}&group=3`);
+      const toResp = await fetch(corsProxy + encodeURIComponent(`https://api.aviationapi.com/v1/charts?apt=${icao}&group=3`));
       if (toResp.ok) {
         const toData = await toResp.json();
         const toCharts = toData[icao] || [];
