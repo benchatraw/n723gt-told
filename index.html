@@ -1365,10 +1365,7 @@ function selectAirport(icao) {
   // Save to localStorage
   localStorage.setItem('told_lastAirport', icao);
 
-  // Fill known airport data
-  fillAirportData(icao);
-
-  // Auto-fetch METAR
+  // Fetch METAR (which also fetches airport/runway data)
   fetchMetar();
 }
 
@@ -1516,30 +1513,128 @@ function addRunway(rwy) {
   container.appendChild(group);
 }
 
-// ===== FILL KNOWN AIRPORT DATA =====
-function fillAirportData(icao) {
+// ===== FILL AIRPORT DATA (API-powered with KNOWN_AIRPORTS fallback) =====
+async function fillAirportData(icao) {
+  // First check hardcoded data as fast fallback
   if (KNOWN_AIRPORTS[icao]) {
-    const ap = KNOWN_AIRPORTS[icao];
-    document.getElementById('elevation').value = ap.elev;
+    renderAirportData(KNOWN_AIRPORTS[icao]);
+    return;
+  }
 
-    const container = document.getElementById('runwayInputs');
-    container.innerHTML = '';
-    rwyCounter = 0;
+  // Try fetching from aviationweather.gov API
+  try {
+    const [airportResp, chartsResp] = await Promise.all([
+      fetch(`https://aviationweather.gov/api/data/airport?ids=${icao}&format=json`),
+      fetch(`https://api.aviationapi.com/v1/charts?apt=${icao}&group=7`).catch(() => null)
+    ]);
 
-    ap.runways.forEach((rwy) => {
-      const idx = rwyCounter++;
-      const group = createRunwayGroup(rwy, idx);
-      container.appendChild(group);
+    const airportData = await airportResp.json();
+    if (!airportData || !airportData.length) throw new Error('No airport data');
+
+    const ap = airportData[0];
+
+    // Parse IFR procedures from charts API
+    let ifrApproaches = {};  // rwy number -> true
+    let ifrDepartures = {};  // rwy number -> true
+    let hasIfrDepartures = false;
+
+    if (chartsResp && chartsResp.ok) {
+      const chartsData = await chartsResp.json();
+      const charts = chartsData[icao] || {};
+
+      // Parse approach procedures - look for runway numbers in chart names
+      (charts.CAPP || []).forEach(c => {
+        const rwyMatch = c.chart_name.match(/RWY\s+(\d{1,2}[LRC]?)/i);
+        if (rwyMatch) {
+          ifrApproaches[rwyMatch[1].toUpperCase()] = true;
+        }
+        // Circle-to-land approaches serve all runways
+        if (c.chart_name.match(/CIRCLE|CIRCLING/i)) {
+          ifrApproaches['_circling'] = true;
+        }
+      });
+
+      // Parse departure procedures
+      if (charts.DP && charts.DP.length > 0) {
+        hasIfrDepartures = true;
+        // SIDs/DPs generally serve all runways unless specific
+        charts.DP.forEach(c => {
+          const rwyMatch = c.chart_name.match(/RWY\s+(\d{1,2}[LRC]?)/i);
+          if (rwyMatch) {
+            ifrDepartures[rwyMatch[1].toUpperCase()] = true;
+          }
+        });
+      }
+    }
+
+    // Also check for takeoff minimums (group=3) to confirm IFR departures
+    try {
+      const toResp = await fetch(`https://api.aviationapi.com/v1/charts?apt=${icao}&group=3`);
+      if (toResp.ok) {
+        const toData = await toResp.json();
+        const toCharts = toData[icao] || [];
+        if (Array.isArray(toCharts)) {
+          toCharts.forEach(c => {
+            if (c.chart_code === 'MIN') hasIfrDepartures = true;
+          });
+        }
+      }
+    } catch(e) { /* ignore */ }
+
+    // Map surface codes
+    const surfaceMap = { 'A': 'dry_paved', 'C': 'dry_paved', 'B': 'dry_paved',
+                         'T': 'grass', 'G': 'grass', 'D': 'grass',
+                         'E': 'dry_paved', 'L': 'dry_paved', 'S': 'grass' };
+
+    // Build runway data
+    const runways = (ap.runways || []).map(rwy => {
+      const ids = rwy.id.split('/');
+      const rwy1 = ids[0];
+      const rwy2 = ids[1] || '';
+      const length = parseInt(rwy.dimension.split('x')[0]) || 0;
+      const heading = rwy.alignment || 0;
+      const surface = surfaceMap[rwy.surface] || 'dry_paved';
+
+      // Determine IFR procedures per runway end
+      const rwy1HasApp = ifrApproaches[rwy1] || ifrApproaches['_circling'] || false;
+      const rwy2HasApp = ifrApproaches[rwy2] || ifrApproaches['_circling'] || false;
+
+      // If DPs don't specify runways, all runways have departures when airport has DPs
+      const hasSpecificDeps = Object.keys(ifrDepartures).length > 0;
+      const rwy1HasDep = hasSpecificDeps ? (ifrDepartures[rwy1] || false) : hasIfrDepartures;
+      const rwy2HasDep = hasSpecificDeps ? (ifrDepartures[rwy2] || false) : hasIfrDepartures;
+
+      const ifr = {};
+      ifr[rwy1] = { dep: rwy1HasDep, app: rwy1HasApp };
+      if (rwy2) ifr[rwy2] = { dep: rwy2HasDep, app: rwy2HasApp };
+
+      return { name: rwy.id, length, hdg: heading, surface, ifr };
     });
-  } else {
-    // Unknown airport: clear runways, let user enter manually
+
+    const result = { elev: ap.elev, runways };
+    renderAirportData(result);
+
+  } catch(e) {
+    console.warn('Airport API fetch failed, showing empty form:', e);
+    // Fallback: clear and show empty runway form
     const container = document.getElementById('runwayInputs');
-    // Only clear if there are no manually-entered runways yet
-    // (i.e., if the runway fields are still from a previous known airport)
     container.innerHTML = '';
     rwyCounter = 0;
     addRunway();
   }
+}
+
+function renderAirportData(apData) {
+  document.getElementById('elevation').value = apData.elev;
+  const container = document.getElementById('runwayInputs');
+  container.innerHTML = '';
+  rwyCounter = 0;
+
+  apData.runways.forEach((rwy) => {
+    const idx = rwyCounter++;
+    const group = createRunwayGroup(rwy, idx);
+    container.appendChild(group);
+  });
 }
 
 // ===== METAR FETCH =====
@@ -1562,6 +1657,10 @@ async function fetchMetar() {
       formatMetarTime();
 
       parseMetar(metarRaw);
+
+      // Also fetch airport/runway data for this airport
+      await fillAirportData(icao);
+
       btn.textContent = 'Fetched!';
       setTimeout(() => { btn.disabled = false; btn.textContent = 'Fetch METAR'; }, 2000);
     } else {
@@ -1623,12 +1722,10 @@ function parseMetar(raw) {
 
   updateFlightRules();
 
-  // Fill known airport data
+  // Set airport ID from METAR (but don't re-fetch airport data here;
+  // it's already fetched by selectAirport or fetchMetar)
   const icao = raw.substring(0, 4);
   document.getElementById('airportId').value = icao;
-  fillAirportData(icao);
-
-  // Save last airport
   localStorage.setItem('told_lastAirport', icao);
 }
 

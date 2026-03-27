@@ -1,4 +1,4 @@
-const CACHE_NAME = 'n723gt-told-v3';
+const CACHE_NAME = 'n723gt-told-v4';
 const ASSETS = [
   './',
   './index.html',
